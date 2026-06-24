@@ -342,11 +342,187 @@
 </head>
 <body>
 
+<!-- ═══ SIEM LOGIN/REGISTER OVERLAY ═══ -->
+<div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: 99999; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; transition: opacity 0.5s ease, visibility 0.5s ease; opacity: 1; visibility: visible;">
+    <style>
+        .auth-card {
+            background: rgba(13, 21, 38, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .auth-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .auth-logo span {
+            background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .auth-subtitle {
+            color: #64748b;
+            font-size: 0.82rem;
+            margin-bottom: 1.75rem;
+            letter-spacing: 0.5px;
+        }
+        .auth-tabs {
+            display: flex;
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 0.5rem;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+        }
+        .auth-tab.active {
+            background: rgba(168, 85, 247, 0.2);
+            color: #fff;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+        .auth-form-group {
+            text-align: left;
+            margin-bottom: 1.25rem;
+        }
+        .auth-form-group label {
+            display: block;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .auth-input {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .auth-input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+            background: rgba(2, 6, 23, 0.6);
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+        }
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+        .auth-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 0.7rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 1.25rem;
+            text-align: left;
+            display: none;
+            animation: authShake 0.3s ease;
+        }
+        @keyframes authShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+    <div class="auth-card">
+        <div class="auth-logo">🛡️ Cloud<span>Shield</span></div>
+        <div id="auth-card-title" style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:0.25rem;">Security Gateway</div>
+        <div class="auth-subtitle">IDENTIFICATION REQUIRED FOR ACCESS</div>
+        
+        <div class="auth-tabs">
+            <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">LOGIN</button>
+            <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">REGISTER</button>
+        </div>
+        
+        <div id="auth-error-banner" class="auth-error"></div>
+        
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+            <div class="auth-form-group">
+                <label for="auth-username">Operator ID</label>
+                <input type="text" id="auth-username" class="auth-input" placeholder="e.g. admin" required autocomplete="off">
+            </div>
+            
+            <div id="auth-group-email" class="auth-form-group" style="display: none;">
+                <label for="auth-email">Secure Email</label>
+                <input type="email" id="auth-email" class="auth-input" placeholder="e.g. analyst@safecorp.com" autocomplete="off">
+            </div>
+            
+            <div class="auth-form-group">
+                <label for="auth-password">Security Keyphrase</label>
+                <input type="password" id="auth-password" class="auth-input" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" id="auth-submit-btn" class="auth-btn">AUTHENTICATE</button>
+        </form>
+    </div>
+</div>
+
 <!-- ═══ HEADER ═══ -->
 <header>
     <div class="logo">🛡️ Cloud<span>Shield</span> <span style="font-size: 0.72rem; color: var(--muted); text-transform: none; font-weight: 500; margin-left: 6px; letter-spacing: 0.5px;">by Pratyush Pandey</span></div>
     <div class="header-right">
         <a href="#" id="btn-export" class="btn">📥 Export Report</a>
+        <a href="#" id="btn-logout" class="btn" style="background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #f87171; margin-left: 8px; display: none;">🚪 Logout</a>
         <div class="pulse-badge">
             <div class="pulse-dot"></div>
             SOC LIVE
@@ -1431,6 +1607,128 @@ function renderCharts() {
     });
 }
 
+// ─── Auth Verification & Portal Control ───────────────────────────────────────
+let currentAuthTab = 'login';
+
+function getRegisteredUsers() {
+    const usersStr = localStorage.getItem('siem_registered_users');
+    if (!usersStr) {
+        return [{ username: 'admin', password: 'admin1234' }];
+    }
+    try {
+        return JSON.parse(usersStr);
+    } catch(e) {
+        return [{ username: 'admin', password: 'admin1234' }];
+    }
+}
+
+window.switchAuthTab = function(tab) {
+    currentAuthTab = tab;
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    
+    const emailGroup = document.getElementById('auth-group-email');
+    const submitBtn = document.getElementById('auth-submit-btn');
+    const authTitle = document.getElementById('auth-card-title');
+    const errorBanner = document.getElementById('auth-error-banner');
+    
+    errorBanner.style.display = 'none';
+    
+    if (tab === 'register') {
+        emailGroup.style.display = 'block';
+        submitBtn.innerText = 'CREATE ACCOUNT';
+        authTitle.innerText = 'Register Analyst';
+    } else {
+        emailGroup.style.display = 'none';
+        submitBtn.innerText = 'AUTHENTICATE';
+        authTitle.innerText = 'Security Gateway';
+    }
+}
+
+window.handleAuthSubmit = function(event) {
+    event.preventDefault();
+    const username = document.getElementById('auth-username').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const email = document.getElementById('auth-email').value.trim();
+    const errorBanner = document.getElementById('auth-error-banner');
+    
+    errorBanner.style.display = 'none';
+    
+    if (!username || !password) {
+        errorBanner.innerText = 'Username and password are required.';
+        errorBanner.style.display = 'block';
+        return;
+    }
+    
+    if (currentAuthTab === 'register') {
+        if (!email) {
+            errorBanner.innerText = 'Email address is required.';
+            errorBanner.style.display = 'block';
+            return;
+        }
+        
+        const users = getRegisteredUsers();
+        if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+            errorBanner.innerText = 'Username already exists.';
+            errorBanner.style.display = 'block';
+            return;
+        }
+        
+        users.push({ username, password, email });
+        localStorage.setItem('siem_registered_users', JSON.stringify(users));
+        
+        window.switchAuthTab('login');
+        document.getElementById('auth-username').value = username;
+        document.getElementById('auth-password').value = password;
+        
+        errorBanner.style.background = 'rgba(16, 185, 129, 0.15)';
+        errorBanner.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        errorBanner.style.color = '#34d399';
+        errorBanner.innerText = 'Registration successful! Please login.';
+        errorBanner.style.display = 'block';
+    } else {
+        errorBanner.style.background = 'rgba(239, 68, 68, 0.15)';
+        errorBanner.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        errorBanner.style.color = '#f87171';
+        
+        const users = getRegisteredUsers();
+        const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+        
+        if (user) {
+            sessionStorage.setItem('siem_logged_in', 'true');
+            checkSiemAuth();
+        } else {
+            errorBanner.innerText = 'Invalid username or password.';
+            errorBanner.style.display = 'block';
+        }
+    }
+}
+
+window.handleSiemLogout = function(event) {
+    if (event) event.preventDefault();
+    sessionStorage.removeItem('siem_logged_in');
+    window.location.reload();
+}
+
+function checkSiemAuth() {
+    const loggedIn = sessionStorage.getItem('siem_logged_in') === 'true';
+    const overlay = document.getElementById('auth-overlay');
+    const logoutBtn = document.getElementById('btn-logout');
+    
+    if (loggedIn) {
+        overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
+        setTimeout(() => { overlay.style.display = 'none'; }, 500);
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        init();
+    } else {
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '1';
+        overlay.style.visibility = 'visible';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+    }
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
     loadStats();
@@ -1443,8 +1741,11 @@ function init() {
     setInterval(loadStats, 15000);
 }
 
-// Auto-run initialization on load
-init();
+// Set logout trigger
+document.getElementById('btn-logout').addEventListener('click', window.handleSiemLogout);
+
+// Auto-run authorization verification on load
+checkSiemAuth();
 </script>
 </body>
 </html>
