@@ -92,7 +92,7 @@ def main():
         },
         {
             "name": "Secure HTTPS Tunnel (localtunnel)",
-            "cmd": ["npx", "localtunnel", "--port", "5000", "--subdomain", "pratyush-siem"],
+            "cmd": ["npx", "localtunnel", "--port", "5000", "--subdomain", "pratyush-cloudshield-siem"],
             "cwd": "security_dashboard",
             "env": {}
         }
