@@ -1,147 +1,168 @@
-# CloudShield v4: Advanced Cyber Defense, Intrusion Prevention & Deception Suite
+# 🛡️ CloudShield v4: Enterprise Cyber Defense, Active Deception & Security Audit Suite
 
-Welcome to **CloudShield v4**, a production-grade, zero-trust cloud security and cyber defense virtualization suite. Designed as a comprehensive Security Operations Center (SOC) simulation, CloudShield integrates active web application firewalls (WAF), real-time log streaming, cryptographic at-rest protection, network deception honeypots, and vulnerability penetration scanners into a unified microservices system.
+[![Security Status](https://img.shields.io/badge/Security-Active%20WAF-brightgreen.svg)](#)
+[![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)](#)
+[![License](https://img.shields.io/badge/Architecture-Microservices-orange.svg)](#)
+[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20At--Rest%20Encrypted-purple.svg)](#)
 
----
-
-## 🌟 Premium Key Features of v4
-
-1. **Standalone Premium Authentication**:
-   - Gorgeous standalone `login.html` and `register.html` pages styled with modern glassmorphism, glowing accents, and fluid layouts.
-   - **Breached Password Audit**: Checks passwords against common leaked lists to prevent credential stuffing.
-   - **Complexity & Entropy Analyzer**: Real-time password complexity bar indicator calculating bits of cryptographic entropy.
-   - **MFA Simulator**: Simulated multi-factor token verification layer.
-
-2. **At-Rest Cryptographic Shield (Vault)**:
-   - Secure File Vault encrypts user documents at-rest inside SQLite tables.
-   - Utilizes portable, fast RC4 stream ciphers with dynamic keys derived from session variables (portal salts combined with user credentials).
-
-3. **Live Gateway Traffic Visualizer**:
-   - Real-time logging console on the SIEM dashboard streaming all request traffic (PASS, BLOCK, DECEPTION) from the proxy gateway via Server-Sent Events (SSE).
-
-4. **Interactive 6+ Analytics Charts & Threat Map**:
-   - Beautiful, local-first Chart.js layouts showing Attack Distributions, 24-Hour Timeline Bar Charts (with vertical gradients), Severity Risk Matrices, WAF Action ratios, and HTTP Methods.
-   - Dynamic animated SVG Threat Maps sketching network lines when threats are blocked.
-
-5. **Autonomous Vulnerability Scanner & Auditor**:
-   - Penetration testing tool probing target URLs, checking for missing security response headers (HSTS, CSP, XFO), directory indexing, and SQL injection vulnerabilities.
-   - **Executive PDF Scorecard**: Print-optimized assessment reports complete with executive summaries, risk levels, and copy-paste remediation patches (Nginx/Flask code blocks).
-
-6. **Active Deception Honeypots**:
-   - Decoy sandbox environment routing directory probes (like `/admin`) away from the real backend.
-   - Auto-bans attacker IPs at the firewall layer if command execution exploits (like `whoami` or `cat /etc/shadow`) are attempted.
+Welcome to **CloudShield v4**, a production-grade, zero-trust cloud security and cyber defense virtualization suite. Architected as a comprehensive Security Operations Center (SOC) simulation, CloudShield integrates active web application firewalls (WAF), live telemetry log streaming, cryptographic at-rest protection, network deception honeypots, and vulnerability penetration scanners into a unified microservices ecosystem.
 
 ---
 
-## 🛠️ System Architecture
+## 🌟 Platform Capabilities & Core Features
+
+### 1. Standalone Premium Authentication & Zero-Trust Portal
+*   **Modern Glassmorphic UI**: Independent, sleek `login.html` and `register.html` pages styled with frosted-glass containers, glowing borders, and linear gradient transitions.
+*   **Password Entropy Analyzer**: Real-time password complexity checker calculating bits of cryptographic information entropy.
+*   **Breached Credentials Audit**: Compares user input against standard dictionary files containing compromised databases to block weak password registrations.
+*   **Simulated MFA Generator**: Dynamic 6-digit Multi-Factor Authentication prompt matching standard verification workflows.
+
+### 2. At-Rest Cryptographic Shield (Secure Vault)
+*   **Stream Cipher Encryption**: Files uploaded to the portal vault are encrypted at-rest inside SQLite tables.
+*   **Session-Key Derivation**: Key combines server secret keys and user session credentials to ensure complete isolation.
+*   **Examiner Visualization Tool**: Users can toggle between the decrypted plaintext file and the raw base64-encoded encrypted database payload inside the UI console.
+
+### 3. Real-Time Telemetry Log Streamer
+*   **Server-Sent Events (SSE)**: Live HTTP request console displaying network actions (PASS, BLOCK, DECEPTION), response codes, and WAF rules matched as they route.
+*   **Visual Threat Vector Tracing**: Dynamic SVG Map plotting threat vectors and drawing glowing attack path lines from geolocations when alerts trigger.
+
+### 4. Interactive 6+ Analytics Visualizations
+*   **Custom Chart.js Core**: Locally hosted charts that load without an internet connection, including:
+    *   *Attack Distribution Doughnut* (with total count center overlays).
+    *   *24-Hour Timeline Bar Chart* (featuring vertical linear gradients).
+    *   *Severity Risk Matrix* (horizontal layout).
+    *   *WAF Action Ratios* (PASS vs BLOCK vs DECEPTION).
+    *   *Alert Status Overview* and *HTTP Methods* breakdowns.
+
+### 5. Pentest Scanner & Executive PDF Report
+*   **Multi-Stage Audit Scanner**: Evaluates target URLs for exposed directory indexes (`/admin`), missing security headers (HSTS, CSP, XFO, nosniff), and SQL Injection auth bypasses.
+*   **Executive Scorecard**: Automatically generates vulnerability lists and download links for CSV audit logs.
+*   **rem-CSS rules**: Print-optimized stylesheets to save scorecards directly as executive PDFs.
+
+### 6. Active Deception Honeypot Sandbox
+*   **Transparent Redirection**: Redirects brute force directory probes (like `/admin` or `/wp-admin`) to a decoy sandbox container without throwing error states.
+*   **Intrusion Mitigation**: Tracks terminal command executions in the sandbox, automatically triggers firewall-layer bans on the attacker's IP, and generates high-priority alerts.
+
+---
+
+## 📐 Microservices Architecture Map
 
 ```text
-               +--------------------------------------+
-               |          Attacker / Client           |
-               +--------------------------------------+
-                                   |
-                                   | Port 8080 (Traffic Gateway)
-                                   v
-               +--------------------------------------+
-               |      Proxy WAF Gateway (proxy_waf)    |
-               +--------------------------------------+
-                  /                                \
-      Legitimate /                                  \ Suspicious / Admin
-      Traffic   /                                    \ Path Request
-               v                                      v
-+------------------------+                 +------------------------+
-|  Legitimate Web App    |                 |     Decoy Honeypot     |
-| (web_app with User DB) |                 |    (honeypot_decoy)    |
-+------------------------+                 +------------------------+
-               \                                    /
-                \-------> Log Security Alert <-----/
-                                 |
-                                 v
-               +--------------------------------------+
-               |   Security Database & API Backend    |
-               |       (security_backend:5000)        |
-               +--------------------------------------+
-                                 ^
-                                 | Port 5000 (REST / SSE Feed)
-                                 v
-               +--------------------------------------+
-               |     SIEM Dashboard UI Server         |
-               |      (security_dashboard:8081)       |
-               +--------------------------------------+
+                               +-------------------------------------+
+                               |           Client / Attacker         |
+                               +-------------------------------------+
+                                                  |
+                                                  | Port 8080 (Gateway Proxy)
+                                                  v
+                               +-------------------------------------+
+                               |     Proxy WAF Gateway (proxy_waf)   |
+                               +-------------------------------------+
+                                  /                               \
+                      Legitimate /                                 \ Suspicious / Admin
+                      Traffic   /                                   \ Path Request
+                               v                                     v
+         +---------------------------+                 +---------------------------+
+         |    Legitimate Web App     |                 |      Decoy Honeypot       |
+         |  (web_app - Users / Vault)|                 |     (honeypot_decoy)      |
+         +---------------------------+                 +---------------------------+
+                               \                                     /
+                                \-------> Send Alert Endpoint <-----/
+                                                 |
+                                                 v
+                               +-------------------------------------+
+                               |   Security Database & API Backend   |
+                               |       (security_backend:5000)       |
+                               +-------------------------------------+
+                                                 ^
+                                                 | Port 5000 (REST / SSE Feed)
+                                                 v
+                               +-------------------------------------+
+                               |       SIEM SOC Dashboard Server     |
+                               |       (security_dashboard:8081)     |
+                               +-------------------------------------+
 ```
+
+---
+
+## 🔌 Microservices Port Configuration
+
+| Service Name | Port | Access URL | Technology Stack |
+| :--- | :--- | :--- | :--- |
+| **Proxy WAF Gateway** | `8080` | `http://localhost:8080` | Python, Flask, RegEx Rules |
+| **Legitimate Web App** | `8000` | `http://localhost:8000` | Python, Flask, Jinja2, SQLite |
+| **Deception Honeypot** | `9000` | `http://localhost:9000` | Python, Flask, Mock Terminal |
+| **Security Backend API** | `5000` | `http://localhost:5000` | Python, Flask, SQLite, SSE |
+| **SIEM Dashboard Server** | `8081` | `http://localhost:8081` | HTML5, Vanilla CSS, Chart.js, SVG |
 
 ---
 
 ## 🚀 Step-by-Step Setup Guide
 
-### 📦 Start Natively using Python (Easiest)
-Launch all 5 microservices (Backend API, Legitimate App, Decoy Honeypot, WAF Proxy Gateway, and SIEM Dashboard) natively using Python. The startup script checks and installs required dependencies (`flask`, `requests`) automatically.
+### 📦 Option A: Native Startup (Recommended & Easiest)
+CloudShield's startup runner installs missing Python packages (`flask`, `requests`) automatically and boots all microservices concurrently.
 
 1. Open a PowerShell/Terminal window in the project root directory and run:
    ```bash
    python run_locally.py
    ```
-2. Keep this window running. To stop all services cleanly, press `Ctrl+C` in the terminal.
+2. Keep the console window open during the demonstration. Press `Ctrl+C` to stop all services cleanly.
 
-### 🐳 Start using Docker Compose
-If Docker Desktop is running on your host system:
-1. Build and boot the container network:
+### 🐳 Option B: Docker Compose Container Cluster
+If Docker Desktop is running on your host:
+1. Build and launch the container nodes:
    ```bash
    docker compose up --build -d
    ```
-2. View container statuses:
+2. Check container status:
    ```bash
    docker ps
    ```
-3. Tear down the containers:
+3. Stop the container swarm:
    ```bash
    docker compose down
    ```
 
 ---
 
-## 💻 Live Demonstration Walkthrough
+## 💻 Live Project Demonstration Walkthrough
 
-Perform these steps during presentations to illustrate CloudShield's active defense capabilities:
+Perform the following sequences to showcase the zero-trust active defense mechanics:
 
-### Step 1: Open portals
-- **WAF Proxy Gateway (App)**: [http://localhost:8080](http://localhost:8080)
-- **SIEM SOC Dashboard**: [http://localhost:8081](http://localhost:8081)
+### 1. The Zero-Trust Portal Setup & Password Strength Audit
+1. Open the website: [http://localhost:8080](http://localhost:8080).
+2. Click **Register Secure Account** to access the new `register.html` page.
+3. In the password field, type a weak password (e.g. `admin1234`). Note the indicator bar turns red and reads **Weak**.
+4. Type a strong credentials string (e.g. `SafeAdmin!99`). The meter updates to green (**Excellent**). Complete the registration.
 
-### Step 2: Test Password Auditing & Sign Up
-1. Go to the app signup: [http://localhost:8080/register](http://localhost:8080/register).
-2. Type a common password (e.g., `admin1234`). Note the indicator bar shows **Weak**.
-3. Create a strong credentials set (e.g., `SafeAdmin!99` -> **Excellent**). Complete the registration.
+### 2. Multi-Factor Authentication & Cryptographic Vault
+1. Go to the login page: [http://localhost:8080/login](http://localhost:8080/login).
+2. Enter your credentials. Click **Verify Identity**.
+3. You are redirected to the **MFA Verification** screen. Copy the simulated authentication code, paste it, and verify to login.
+4. Select **Secure File Vault** in the dashboard sidebar.
+5. Create a file note (e.g. `keys.txt` with content `token_secret_99`).
+6. Click **View raw database payload** under the file. This shows examiners the base64-encoded encrypted text stored in the SQLite database to prove **at-rest database encryption**.
 
-### Step 3: Test Login & MFA Simulator
-1. Go to the sign-in page: [http://localhost:8080/login](http://localhost:8080/login).
-2. Type your registered username and password. Click **Verify Identity**.
-3. The MFA screen prompts. Copy the simulated token code shown on the screen and paste it in the field to log in.
-4. Navigate the sidebar tabs, especially **Security Rating** and **Security Features**.
-
-### Step 4: Encrypted Vault Demonstration
-1. In the user portal, select **Secure File Vault**.
-2. Upload a note (e.g. `filename: keys.txt`, `content: secret123`).
-3. Under the list, click **View raw database payload** to show examiners that the content is stored completely encrypted inside the SQLite database, but decrypts dynamically in the active user console.
-
-### Step 5: Test WAF Block & Real-Time Alert Logging
-1. Go back to the SIEM Dashboard. Ensure the SQL Injection and XSS rules are **enabled** (Signature Registry tab).
-2. Go to the web app sign-in page.
-3. Try an SQL Injection login bypass payload in the username field: `' OR 1=1--`.
+### 3. Active WAF Interception & Real-Time Alert Logging
+1. Open the **SIEM Dashboard** on [http://localhost:8081](http://localhost:8081) and go to the **Traffic Inspector** tab.
+2. In another tab, log out of the portal and go to [http://localhost:8080/login](http://localhost:8080/login).
+3. Try a SQL Injection authentication bypass payload:
+   * **Username**: `admin' OR '1'='1`
+   * **Password**: `any`
 4. Click **Verify Identity**.
-5. **Result**: Instantly intercepted! The gateway returns a red **Access Blocked** screen.
-6. Open the SIEM Dashboard. Notice the new SQL Injection alert in the real-time feed, and the live request logged in the **Traffic Inspector** console!
+5. **Result**: The request is instantly blocked by the Proxy WAF Gateway, displaying a red **Access Blocked** alert page.
+6. Check the **SIEM Dashboard**. The real-time alert feed shows a new High-Severity SQLi threat, the geolocations map draws a glowing attack vector, and the Traffic Inspector console lists the blocked log live.
 
-### Step 6: Decoy Redirect & Automated IP Ban
-1. Probing decoy: Visit [http://localhost:8080/admin](http://localhost:8080/admin) in the browser.
-2. The WAF gateway redirects the request to the isolated **Honeypot Decoy console**.
-3. Inside the honeypot terminal, attempt an exploit command (e.g., `cat /etc/shadow` or `whoami`).
-4. **Result**: The honeypot logs the command execution, sends a CRITICAL alert to the backend, and the backend triggers a firewall-layer ban on the source IP.
-5. Try to refresh the main website homepage ([http://localhost:8080](http://localhost:8080)). You are blocked from the network!
-6. Visit the SIEM Dashboard, click the **Firewall Blocklist** tab, and click **Unban** to restore access.
+### 4. Decoy Redirect & Automated IP Ban
+1. Probing decoy: Enter [http://localhost:8080/admin](http://localhost:8080/admin) in the browser.
+2. The proxy gateway transparently routes you to the isolated **Mock Honeypot Sandbox**.
+3. Inside the terminal prompt, type an exploit command (e.g., `cat /etc/shadow` or `whoami`) and hit Enter.
+4. **Result**: The honeypot logs the command execution, alerts the backend, and triggers an **automated firewall ban** on your IP.
+5. Try loading the clean homepage [http://localhost:8080/](http://localhost:8080/). You are blocked from the network!
+6. Click **Unban IP** in the SIEM dashboard's blocklist table to recover access.
 
-### Step 7: Run Vulnerability Scan & Export Report
+### 5. Vulnerability Scan & PDF Audit Report Generation
 1. On the SIEM Dashboard, navigate to the **Vulnerability Auditor** tab.
-2. Click **Start Scan** targeting `http://localhost:8080`.
-3. Review the scorecard (Missing headers, exposed paths, and bypass tests).
-4. Click **Print** to save or print the executive audit report, or inspect the auto-downloaded audit CSV sheet.
+2. Target `http://localhost:8080` and click **Start Scan**.
+3. Once completed, review the security scorecard showing missing headers and SQLi bypass vulnerabilities.
+4. Click **Print** to save the scorecard as a formatted executive PDF.
+5. Check your downloads directory for the auto-downloaded `audit_report.csv` file containing the complete transaction log.
