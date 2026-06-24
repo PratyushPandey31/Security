@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Core Console | Restricted Area</title>
+    <style>
+        body {
+            background-color: #0c0f12;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-box {
+            border: 2px solid #00ff66;
+            background-color: #12181d;
+            padding: 2.5rem;
+            width: 400px;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .login-box::before {
+            content: "CRITICAL SYSTEM CORE";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: #0c0f12;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #07090b;
+            border: 1px solid #00ff66;
+            color: #00ff66;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            box-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #00ff66;
+            color: #0c0f12;
+            border: none;
+            padding: 0.75rem;
+            font-weight: bold;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0c0f12;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+        }
+
+        .error {
+            color: #ff3333;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            border: 1px dashed #ff3333;
+            padding: 0.5rem;
+            background-color: rgba(255, 51, 51, 0.05);
+            text-align: left;
+        }
+
+        .success {
+            color: #00ff66;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            border: 1px dashed #00ff66;
+            padding: 0.5rem;
+            background-color: rgba(0, 255, 102, 0.05);
+            text-align: left;
+        }
+
+        .warning-text {
+            color: #ffcc00;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+            border-top: 1px solid #334155;
+            padding-top: 1rem;
+        }
+
+        .fake-console {
+            margin-top: 2rem;
+            text-align: left;
+            background-color: #07090b;
+            padding: 1rem;
+            border: 1px solid #00ff66;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+
+        .fake-console input {
+            border: none;
+            padding: 0;
+            background: transparent;
+            width: 70%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>CORE CONTROL</h2>
+        <p style="font-size: 0.8rem; color: #ffcc00; margin-bottom: 2rem;">[WARNING: AUTHORIZED PERSONNEL ONLY]</p>
+        
+        {% if not success %}
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="username">User Identity</label>
+                <input type="text" id="username" name="username" placeholder="sysadm" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Security Hash</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">INITIALIZE</button>
+        </form>
+        {% endif %}
+
+        {% if error %}
+            <div class="{% if success %}success{% else %}error{% endif %}">
+                >>> {{ error }}
+            </div>
+        {% endif %}
+
+        {% if success %}
+            <div class="fake-console" id="console">
+                <div>root@core-serv:~# whoami</div>
+                <div>root</div>
+                <div>root@core-serv:~# _</div>
+                <div style="margin-top: 10px;">
+                    <span>root@core-serv:~# </span>
+                    <input type="text" id="cmdInput" autofocus placeholder="Type help...">
+                </div>
+            </div>
+
+            <script>
+                const input = document.getElementById('cmdInput');
+                const consoleDiv = document.getElementById('console');
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const val = this.value;
+                        this.value = '';
+                        
+                        // Create user prompt element
+                        const userPrompt = document.createElement('div');
+                        userPrompt.innerText = 'root@core-serv:~# ' + val;
+                        consoleDiv.insertBefore(userPrompt, input.parentElement);
+                        
+                        // Send command to server
+                        fetch('/admin/execute', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ command: val })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            const output = document.createElement('div');
+                            output.style.color = '#818CF8';
+                            output.innerText = data.output;
+                            consoleDiv.insertBefore(output, input.parentElement);
+                            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                        });
+                    }
+                });
+            </script>
+        {% endif %}
+
+        <div class="warning-text">
+            SECURE DECRYPTION LAYER ACTIVE.<br>
+            ALL IPS AND PAYLOADS ARE SENT TO SIEM INTERNET DISPATCH (GATEWAY-09).
+        </div>
+    </div>
+
+</body>
+</html>

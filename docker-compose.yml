@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # 1. Legitimate Web Application (Internal subnet, not directly exposed)
+  web-app:
+    build: ./web_app
+    container_name: cloudshield-web-app
+    restart: unless-stopped
+    environment:
+      - PORT=8000
+    networks:
+      - cloudshield-network
+
+  # 2. Deception Honeypot (Internal subnet, accessed only via proxy redirection)
+  honeypot-decoy:
+    build: ./honeypot_decoy
+    container_name: cloudshield-honeypot
+    restart: unless-stopped
+    environment:
+      - PORT=9000
+      - BACKEND_URL=http://security-backend:5000/api/alerts
+    networks:
+      - cloudshield-network
+
+  # 3. Security Logging & IDS Backend
+  security-backend:
+    build: ./security_backend
+    container_name: cloudshield-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - security-data:/app/data
+    networks:
+      - cloudshield-network
+
+  # 4. Custom WAF Reverse Proxy (Exposed to the public / attacker)
+  proxy-waf:
+    build: ./proxy_waf
+    container_name: cloudshield-proxy-waf
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WEB_APP_URL=http://web-app:8000
+      - HONEYPOT_URL=http://honeypot-decoy:9000
+      - BACKEND_URL=http://security-backend:5000/api/alerts
+    depends_on:
+      - web-app
+      - honeypot-decoy
+      - security-backend
+    networks:
+      - cloudshield-network
+
+  # 5. Security SIEM Dashboard
+  security-dashboard:
+    build: ./security_dashboard
+    container_name: cloudshield-dashboard
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - security-backend
+    networks:
+      - cloudshield-network
+
+networks:
+  cloudshield-network:
+    driver: bridge
+
+volumes:
+  security-data:

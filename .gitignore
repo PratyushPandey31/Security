@@ -1,0 +1,28 @@
+# SQLite Databases
+*.db
+*.db-journal
+*.db-wal
+security_backend/data/
+web_app/data/
+data/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Editor/OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

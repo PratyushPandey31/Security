@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeCorp Solutions | Enterprise Secure Console</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --background: #090D16;
+            --surface: #131B2E;
+            --surface-accent: #1E293B;
+            --text-main: #F8FAFC;
+            --text-muted: #8E9BAE;
+            --border: #223254;
+            --accent: #10B981;
+            --error-color: #EF4444;
+            --warning-color: #F59E0B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            background-color: rgba(19, 27, 46, 0.8);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 75px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--surface-accent);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .hero {
+            padding: 5rem 0 3rem;
+            text-align: center;
+            background: radial-gradient(circle at top, rgba(79, 70, 229, 0.15) 0%, transparent 60%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #818CF8, #34D399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .auth-card {
+            max-width: 450px;
+            margin: 3rem auto;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-card h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .alert-message {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Dashboard specific styles */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .sidebar-user {
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-user h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        .sidebar-user p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .tabs-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            color: var(--text-main);
+            background-color: var(--surface-accent);
+        }
+
+        .tab-btn.active {
+            border-left: 3px solid var(--primary);
+            border-radius: 0 6px 6px 0;
+            padding-left: calc(1rem - 3px);
+        }
+
+        .main-content {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Score Panel UI */
+        .score-box {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background-color: rgba(9, 13, 22, 0.4);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0%, var(--accent) var(--p-score), #223254 var(--p-score), #223254 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .score-circle-inner {
+            width: 84px;
+            height: 84px;
+            background-color: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .score-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .score-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .score-info {
+            flex: 1;
+        }
+
+        .tips-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .tips-list li {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--warning-color);
+        }
+
+        /* Tables & Lists */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        table th {
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(34, 50, 84, 0.4);
+            text-align: left;
+            max-width: 250px;
+            word-wrap: break-word;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo">
+                    🛡️ Safe<span>Corp</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    {% if session and session.username %}
+                        <li><a href="/dashboard" class="active">Console</a></li>
+                        <li><a href="/logout" class="btn btn-outline" style="padding: 0.4rem 1rem;">Sign Out</a></li>
+                    {% else %}
+                        <li><a href="/login">Sign In</a></li>
+                        <li><a href="/register" class="btn" style="padding: 0.4rem 1rem;">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        {% if page == "mfa" %}
+            <div class="auth-card" style="border: 2px solid var(--warning-color); box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);">
+                <h2 style="color: var(--warning-color); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    🛡️ MFA Verification
+                </h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center; margin-bottom: 1.5rem;">
+                    CloudShield Multi-Factor Authentication is active for this account.
+                </p>
+                {% if error %}
+                    <div class="alert alert-error">{{ error }}</div>
+                {% endif %}
+                <form action="/verify-mfa" method="POST">
+                    <div class="form-group" style="text-align: center;">
+                        <label style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; display: block;">Verification Token Code</label>
+                        <div style="background-color: var(--background); padding: 1.2rem; border: 1px dashed var(--warning-color); border-radius: 8px; margin-bottom: 1.5rem;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem; font-family: monospace; letter-spacing: 1px;">[MOCKED APP SENSOR TOKEN]</span>
+                            <span style="font-size: 1.6rem; font-weight: 800; color: var(--warning-color); letter-spacing: 4px;">{{ mfa_token }}</span>
+                        </div>
+                        <input type="text" name="mfa_token" class="form-control" placeholder="Enter the code (e.g. 123-456)" style="text-align: center; font-size: 1.3rem; letter-spacing: 2px;" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 1rem; background-color: var(--warning-color);">Verify & Sign In</button>
+                </form>
+            </div>
+
+        {% elif page == "dashboard" %}
+            <div class="dashboard-container">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-user">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👤</div>
+                        <h3>{{ session.username }}</h3>
+                        <p>{{ session.email }}</p>
+                    </div>
+                    <div class="tabs-menu">
+                        <button class="tab-btn active" onclick="switchTab(event, 'tab-security')">🛡️ Security Rating</button>
+                        <button class="tab-btn" onclick="switchTab(event, 'tab-vault')">🔑 Secure File Vault</button>
+                        <button class="tab-btn" onclick="switchTab(event, 'tab-messaging')">✉️ Secure Messaging</button>
+                        <button class="tab-btn" onclick="switchTab(event, 'tab-audit')">📜 Access Audit Log</button>
+                        <button class="tab-btn" onclick="switchTab(event, 'tab-features')">✨ Security Features</button>
+                    </div>
+                </div>
+
+                <!-- Main Display content -->
+                <div class="main-content">
+                    <!-- Tab 1: Security Score -->
+                    <div id="tab-security" class="tab-content active">
+                        <h2 style="margin-bottom: 1rem;">Account Security Analysis</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem;">Real-time diagnostics of your credentials and portal health parameters.</p>
+                        
+                        <div class="score-box">
+                            <div class="score-circle" style="--p-score: {{ security_score }}%;">
+                                <div class="score-circle-inner">
+                                    <div class="score-number">{{ security_score }}</div>
+                                    <div class="score-label">Score</div>
+                                </div>
+                            </div>
+                            <div class="score-info">
+                                <h3 style="color: {% if is_leaked %}var(--error-color){% elif security_score >= 80 %}var(--accent){% elif security_score >= 50 %}var(--warning-color){% else %}var(--error-color){% endif %};">
+                                    {% if is_leaked %}BREACHED PASSWORD IDENTIFIED{% elif security_score >= 80 %}Strong Account Security{% elif security_score >= 50 %}Moderate Security Weakness{% else %}High Risk Level{% endif %}
+                                </h3>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                    Calculated Password Entropy: <strong style="color: var(--text-main);">{{ entropy }} bits</strong>
+                                </p>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                    This score measures password complexity, bits of information entropy, and checks public dictionary databases.
+                                </p>
+                            </div>
+                        </div>
+
+                        {% if is_leaked %}
+                            <div class="alert alert-error" style="margin-top: 1rem; background-color: rgba(239, 68, 68, 0.15); border-color: rgba(239,68,68,0.3);">
+                                🛑 <strong>CRITICAL:</strong> Your password is in public leaked dictionary lists. Attackers can bypass your credentials easily using standard wordlists. Recommend changing this.
+                            </div>
+                        {% endif %}
+
+                        {% if security_tips %}
+                            <h4 style="margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Recommendations to improve:</h4>
+                            <ul class="tips-list">
+                                {% for tip in security_tips %}
+                                    <li>⚠️ {{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            {% if not is_leaked %}
+                                <div class="alert alert-message" style="margin-top: 1rem;">
+                                    ✔️ Great job! Your account satisfies all security verification guidelines.
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Tab 2: File Vault -->
+                    <div id="tab-vault" class="tab-content">
+                        <h2 style="margin-bottom: 0.5rem;">Secure Document Vault</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Upload sensitive text content or logs. Documents are isolated in user-specific storage.</p>
+                        
+                        <!-- File Upload Form -->
+                        <form action="/vault/upload" method="POST" style="margin-bottom: 2rem; background: rgba(9, 13, 22, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                            <div class="form-group">
+                                <label for="filename">File / Note Name</label>
+                                <input type="text" id="filename" name="filename" class="form-control" placeholder="credential_log.txt" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="content">File Content (Encrypted at Rest)</label>
+                                <textarea id="content" name="content" class="form-control" rows="4" placeholder="Enter sensitive details to save securely..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn">Upload to Vault</button>
+                        </form>
+
+                        <!-- Files list table -->
+                        <h3 style="margin-bottom: 0.5rem;">Your Uploaded Vault Files</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Content Preview</th>
+                                        <th>Upload Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if files %}
+                                        {% for file in files %}
+                                            <tr>
+                                                <td style="font-weight: 600; color: var(--accent);">
+                                                    🔑 {{ file.filename }}<br>
+                                                    <span style="font-size: 0.75rem; background-color: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 4px; display: inline-block; margin-top: 0.3rem;">🔒 Encrypted (AES-256)</span>
+                                                </td>
+                                                <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-main);">
+                                                    <div style="margin-bottom: 0.5rem; color: var(--text-main);">
+                                                        <strong>Plaintext:</strong> <code style="color: #34D399; font-size: 0.9rem;">{{ file.decrypted_content }}</code>
+                                                    </div>
+                                                    <details style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                                        <summary style="cursor: pointer; color: var(--primary);">View raw database payload</summary>
+                                                        <div style="background-color: var(--background); padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; margin-top: 0.25rem; word-break: break-all; color: var(--text-muted);">
+                                                            {{ file.file_content }}
+                                                        </div>
+                                                    </details>
+                                                </td>
+                                                <td>{{ file.upload_date }}</td>
+                                                <td><a href="/vault/delete/{{ file.id }}" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Vault is empty. No files uploaded.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Secure Messaging -->
+                    <div id="tab-messaging" class="tab-content">
+                        <h2 style="margin-bottom: 0.5rem;">Secure Communications</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Send encrypted support requests directly to the SOC administration center.</p>
+
+                        <!-- Send Message Form -->
+                        <form action="/message/send" method="POST" style="margin-bottom: 2rem; background: rgba(9, 13, 22, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                            <div class="form-group">
+                                <label for="subject">Security Request Subject</label>
+                                <input type="text" id="subject" name="subject" class="form-control" placeholder="Request MFA configuration reset" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Secure Message Payload</label>
+                                <textarea id="message" name="message" class="form-control" rows="4" placeholder="Detail your security concern..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn">Send Secure Message</button>
+                        </form>
+
+                        <!-- Messages list -->
+                        <h3 style="margin-bottom: 0.5rem;">Sent Messages History</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Message Body</th>
+                                        <th>Status</th>
+                                        <th>Sent Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if messages %}
+                                        {% for msg in messages %}
+                                            <tr>
+                                                <td style="font-weight: 600;">✉️ {{ msg.subject }}</td>
+                                                <td style="color: var(--text-muted);">{{ msg.message }}</td>
+                                                <td><span style="color: var(--accent); font-weight: 700; font-size: 0.8rem;">DISPATCHED</span></td>
+                                                <td>{{ msg.send_date }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No messages sent.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Audit Logs -->
+                    <div id="tab-audit" class="tab-content">
+                        <h2 style="margin-bottom: 0.5rem;">Security Audit Activity Log</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Logs of authenticated operations to detect credential brute forcing or unauthorized profile access.</p>
+                        
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Action Type</th>
+                                        <th>Source IP</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if activity %}
+                                        {% for act in activity %}
+                                            <tr>
+                                                <td>{{ act.timestamp }}</td>
+                                                <td style="font-weight: 600; color: {% if 'FAILED' in act.activity_type %}var(--error-color){% else %}var(--text-main){% endif %};">
+                                                    {{ act.activity_type }}
+                                                </td>
+                                                <td>{{ act.ip_address }}</td>
+                                                <td>
+                                                    <span style="font-weight: bold; font-size: 0.8rem; color: {% if 'FAILED' in act.activity_type %}var(--error-color){% else %}var(--accent){% endif %};">
+                                                        {% if 'FAILED' in act.activity_type %}REJECTED{% else %}APPROVED{% endif %}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No activity log records.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Security Features Info -->
+                    <div id="tab-features" class="tab-content">
+                        <h2 style="margin-bottom: 0.5rem;">CloudShield Security Architecture</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Overview of the defense protocols currently active on your account and server connection gateway.</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+                            <div style="background-color: rgba(9, 13, 22, 0.4); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="color: var(--accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">🔒 Cryptographic Vault</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                    All files uploaded to your document vault are encrypted at-rest inside SQLite tables. A dynamic key derived from session variables (combining portal salts and user credentials) is used by our ciphers to prevent database inspection leaks.
+                                </p>
+                            </div>
+                            
+                            <div style="background-color: rgba(9, 13, 22, 0.4); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="color: var(--primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">🛡️ WAF Proxy Protection</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                    Your session is routed through a central Reverse WAF Gateway. The gateway dynamically sanitizes inputs, comparing them to active signatures for SQL Injection, XSS, and command traversal before they reach web server cores.
+                                </p>
+                            </div>
+
+                            <div style="background-color: rgba(9, 13, 22, 0.4); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="color: var(--warning-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">🗝️ Multi-Factor Verification</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                    Multi-Factor Authentication (MFA) is simulation-active for your profile. Authentication tokens are generated dynamically at login using randomized session variables and verified before opening dashboard modules.
+                                </p>
+                            </div>
+
+                            <div style="background-color: rgba(9, 13, 22, 0.4); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                                <h3 style="color: var(--error-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">📜 Access Audit Trails</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                                    Every authentication request, file upload, note deletion, and support message is audited. Access logs capture timestamps, client IPs, activity types, and authorization status to detect brute force actions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Switching Script -->
+            <script>
+                function switchTab(evt, tabId) {
+                    // Hide all tab contents
+                    const contents = document.getElementsByClassName("tab-content");
+                    for (let i = 0; i < contents.length; i++) {
+                        contents[i].classList.remove("active");
+                    }
+                    
+                    // Deactivate all tab buttons
+                    const buttons = document.getElementsByClassName("tab-btn");
+                    for (let i = 0; i < buttons.length; i++) {
+                        buttons[i].classList.remove("active");
+                    }
+                    
+                    // Show current tab content & activate button
+                    document.getElementById(tabId).classList.add("active");
+                    evt.currentTarget.classList.add("active");
+                }
+            </script>
+
+        {% else %}
+            <!-- Landing page -->
+            <section class="hero">
+                <h1>Next-Gen Cloud <span>Defense Gateway</span></h1>
+                <p>Enterprise microservice virtualization with zero-trust security architecture, custom WAF filters, dynamic rule configurations, and secure user vault interfaces.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2.5rem;">
+                    <a href="/register" class="btn">Register Secure Account</a>
+                    <a href="/login" class="btn btn-outline">Access Portal Console</a>
+                </div>
+            </section>
+
+            <div style="max-width: 900px; margin: 0 auto 5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div style="background-color: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 8px;">
+                    <h3>🔑 DB Auth & Audit Logs</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">SQLite-backed registration and login. Passwords securely hashed with SHA-256 and login activity tracked.</p>
+                </div>
+                <div style="background-color: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 8px;">
+                    <h3>📁 Secure File Vault</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Upload text notes and documents into your secure profile vault, completely isolated from other users.</p>
+                </div>
+                <div style="background-color: var(--surface); border: 1px solid var(--border); padding: 2rem; border-radius: 8px;">
+                    <h3>✉️ Encrypted Messages</h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Send secure audit requests and communications directly to the SOC dashboard telemetry controllers.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 SafeCorp Solutions. Project CloudShield v3 - Enterprise Secure Data Console.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
