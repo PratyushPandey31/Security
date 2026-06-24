@@ -21,7 +21,7 @@ def install_dependencies():
             print(f"[!] Error installing dependencies: {e}")
             sys.exit(1)
 
-def run_service(cmd, cwd, env_vars=None):
+def run_service(cmd, cwd, env_vars=None, service_name=""):
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
     if env_vars:
@@ -31,10 +31,9 @@ def run_service(cmd, cwd, env_vars=None):
         [sys.executable] + cmd,
         cwd=cwd,
         env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
         text=True
     )
+    p.service_name = service_name
     processes.append(p)
     return p
 
@@ -92,7 +91,7 @@ def main():
     # 3. Spin up all components in background
     for s in services:
         print(f"[*] Launching {s['name']}...")
-        run_service(s["cmd"], s["cwd"], s["env"])
+        run_service(s["cmd"], s["cwd"], s["env"], s["name"])
         time.sleep(1) # wait briefly before starting next service
         
     print("\n" + "=" * 80)
@@ -108,18 +107,11 @@ def main():
         # Keep main thread alive and print logs
         while True:
             for p in processes:
-                # Non-blocking poll for logs
+                # Non-blocking poll
                 if p.poll() is not None:
-                    print(f"\n[!] One of the services exited with code {p.returncode}. Stopping all...")
+                    print(f"\n[!] Service '{p.service_name}' exited with code {p.returncode}. Stopping all...")
                     raise KeyboardInterrupt
-                
-                # Check for output to display
-                line = p.stdout.readline()
-                if line:
-                    # Optional: Print raw logs if desired (uncomment if debugging logs)
-                    # print(f"[{p.pid}] {line.strip()}")
-                    pass
-            time.sleep(0.1)
+            time.sleep(0.2)
             
     except KeyboardInterrupt:
         print("\n[*] Terminating all processes...")
