@@ -50,6 +50,7 @@ def establish_tunnel():
         ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
+        stdin=subprocess.DEVNULL,
         text=True,
         bufsize=1
     )
@@ -82,13 +83,13 @@ def establish_tunnel():
             
         print("[*] Committing and pushing tunnel URL to GitHub...")
         try:
-            # We run git commands synchronously to ensure it's pushed before dashboard accesses it
-            subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # We run git commands with a timeout and stdin=DEVNULL to prevent hanging the startup of other services
+            subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
+            subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
+            subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=15)
             print("[+] Tunnel URL pushed successfully to GitHub!")
         except Exception as e:
-            print(f"[!] Warning: Git push failed: {e}")
+            print(f"[!] Warning: Git push failed or timed out: {e}")
             
     # We must start a background thread/process to consume stdout so the tunnel process doesn't hang!
     import threading
