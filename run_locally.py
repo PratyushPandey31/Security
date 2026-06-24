@@ -27,11 +27,15 @@ def run_service(cmd, cwd, env_vars=None, service_name=""):
     if env_vars:
         env.update(env_vars)
         
+    is_python = cmd[0].endswith('.py') or cmd[0] == '-m'
+    executable = [sys.executable] if is_python else []
+    
     p = subprocess.Popen(
-        [sys.executable] + cmd,
+        executable + cmd,
         cwd=cwd,
         env=env,
-        text=True
+        text=True,
+        shell=not is_python
     )
     p.service_name = service_name
     processes.append(p)
@@ -83,6 +87,12 @@ def main():
         {
             "name": "SIEM Dashboard Server",
             "cmd": ["-m", "http.server", "8081"],
+            "cwd": "security_dashboard",
+            "env": {}
+        },
+        {
+            "name": "Secure HTTPS Tunnel (localtunnel)",
+            "cmd": ["npx", "localtunnel", "--port", "5000", "--subdomain", "pratyush-siem"],
             "cwd": "security_dashboard",
             "env": {}
         }
