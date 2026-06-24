@@ -16,7 +16,7 @@ This edition features a **fully deployed public SOC Dashboard** integrated with 
 
 ### 1. SIEM SOC Dashboard Gateway (New)
 *   **Security Gateway Protection**: The public SIEM dashboard is protected by a sleek, glassmorphic auth overlay. Telemetry endpoints and real-time feeds only initialize upon successful operator authentication.
-*   **Default Analyst Account**: Auto-registers a default analyst credentials set (`admin` / `admin1234`) on first load.
+*   **Default Analyst Account**: Auto-registers a default analyst credential set upon first load.
 *   **Local Storage Analyst Vault**: Analysts can register new security operator cards directly. Credentials persist across browser reloads using secure local storage serialization.
 *   **Operator Session Control**: Supports secure logout triggers that wipe session tokens, lock the SOC visuals instantly, and stop backend feeds.
 
@@ -142,15 +142,13 @@ Perform the following sequences to showcase the zero-trust active defense mechan
 
 ### 1. SIEM SOC Dashboard Gateway & Telemetry Connection
 1. Open the public deployed dashboard: [https://pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app).
-2. Authenticate using:
-   * **Operator ID**: `admin`
-   * **Security Keyphrase**: `admin1234`
+2. Authenticate using the default Operator ID and Security Keyphrase initialized in the portal database.
 3. If the local microservices are running (via Option A/B), the dashboard will connect instantly to your active telemetry server over the secure HTTPS tunnel.
 
 ### 2. Zero-Trust Portal Setup & Password Strength Audit
 1. Open the website portal: [http://localhost:8080](http://localhost:8080).
 2. Click **Register Secure Account** to access the premium `register.html` page.
-3. In the password field, type a weak password (e.g. `admin1234`). Note the indicator bar turns red and reads **Weak**.
+3. In the password field, type a weak password (e.g. `12345`). Note the indicator bar turns red and reads **Weak**.
 4. Type a strong credentials string (e.g. `SafeAdmin!99`). The meter updates to green (**Excellent**). Complete the registration.
 
 ### 3. Multi-Factor Authentication & Cryptographic Vault
