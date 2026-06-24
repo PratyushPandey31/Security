@@ -3,6 +3,7 @@ import sys
 import os
 import time
 import signal
+import re
 
 processes = []
 
@@ -11,11 +12,12 @@ def install_dependencies():
     try:
         import flask
         import requests
+        import flask_cors
         print("[+] Dependencies are already installed.")
     except ImportError:
-        print("[-] Dependencies missing. Installing 'flask' and 'requests'...")
+        print("[-] Dependencies missing. Installing 'flask', 'requests', and 'flask-cors'...")
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "flask", "requests"])
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "flask", "requests", "flask-cors"])
             print("[+] Installation successful!")
         except Exception as e:
             print(f"[!] Error installing dependencies: {e}")
@@ -41,6 +43,69 @@ def run_service(cmd, cwd, env_vars=None, service_name=""):
     processes.append(p)
     return p
 
+def establish_tunnel():
+    print("[*] Initializing secure HTTPS tunnel (localhost.run)...")
+    # Launch localhost.run tunnel in background, piping output so we can parse it
+    p = subprocess.Popen(
+        ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
+    )
+    
+    tunnel_url = None
+    start_time = time.time()
+    
+    # Read output to extract the random lhr.life tunnel URL
+    while True:
+        if time.time() - start_time > 20: # Timeout after 20 seconds
+            print("[!] Tunnel establishment timed out.")
+            break
+            
+        line = p.stdout.readline()
+        if not line:
+            break
+            
+        print(f"    [Tunnel] {line.strip()}")
+        if "lhr.life" in line:
+            match = re.search(r"https://[a-zA-Z0-9-]+\.lhr\.life", line)
+            if match:
+                tunnel_url = match.group(0)
+                print(f"[+] Tunnel URL detected: {tunnel_url}")
+                break
+                
+    if tunnel_url:
+        # Save to tunnel_url.txt
+        with open("tunnel_url.txt", "w") as f:
+            f.write(tunnel_url)
+            
+        print("[*] Committing and pushing tunnel URL to GitHub...")
+        try:
+            # We run git commands synchronously to ensure it's pushed before dashboard accesses it
+            subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print("[+] Tunnel URL pushed successfully to GitHub!")
+        except Exception as e:
+            print(f"[!] Warning: Git push failed: {e}")
+            
+    # We must start a background thread/process to consume stdout so the tunnel process doesn't hang!
+    import threading
+    def consume_output(stream):
+        try:
+            for _ in stream:
+                pass
+        except Exception:
+            pass
+            
+    t = threading.Thread(target=consume_output, args=(p.stdout,), daemon=True)
+    t.start()
+    
+    p.service_name = "Secure HTTPS Tunnel (localhost.run)"
+    processes.append(p)
+    return p
+
 def main():
     print("=" * 80)
     print("                CLOUDSHIELD LOCAL MULTI-SERVICE RUNNER                 ")
@@ -50,7 +115,10 @@ def main():
     # 1. Install pip packages
     install_dependencies()
     
-    # 2. Define service execution configurations
+    # 2. Start SSH Tunnel and Push to GitHub
+    establish_tunnel()
+    
+    # 3. Define other service execution configurations
     services = [
         {
             "name": "Security Backend API",
@@ -89,16 +157,10 @@ def main():
             "cmd": ["-m", "http.server", "8081"],
             "cwd": "security_dashboard",
             "env": {}
-        },
-        {
-            "name": "Secure HTTPS Tunnel (localtunnel)",
-            "cmd": ["npx", "localtunnel", "--port", "5000", "--subdomain", "pratyush-cloudshield-siem"],
-            "cwd": "security_dashboard",
-            "env": {}
         }
     ]
     
-    # 3. Spin up all components in background
+    # 4. Spin up all components in background
     for s in services:
         print(f"[*] Launching {s['name']}...")
         run_service(s["cmd"], s["cwd"], s["env"], s["name"])

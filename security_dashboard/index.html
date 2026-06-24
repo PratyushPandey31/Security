@@ -1023,18 +1023,33 @@ window.onunhandledrejection = function(event) {
     showBannerError(`Promise Rejected: ${event.reason}`);
 };
 
-// Monkey-patch window.fetch to automatically include Localtunnel bypass headers
-const originalFetch = window.fetch;
-window.fetch = function(url, options) {
-    options = options || {};
-    options.headers = options.headers || {};
-    options.headers['Bypass-Tunnel-Reminder'] = 'true';
-    return originalFetch(url, options);
-};
-
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+let API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? window.location.protocol + '//' + window.location.hostname + ':5000'
-    : 'https://pratyush-cloudshield-siem.loca.lt';
+    : '';
+
+function fetchActiveTunnelURL(callback) {
+    if (API) {
+        callback();
+        return;
+    }
+    const gitUrl = 'https://raw.githubusercontent.com/PratyushPandey31/Security/main/tunnel_url.txt';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', gitUrl + '?t=' + new Date().getTime(), true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                API = xhr.responseText.trim();
+                console.log('Active Tunnel API loaded:', API);
+                callback();
+            } else {
+                console.error('Failed to load active tunnel URL, falling back to localhost');
+                API = 'http://localhost:5000';
+                callback();
+            }
+        }
+    };
+    xhr.send();
+}
 
 // ─── Tab switching ────────────────────────────────────────────────────────────
 function switchTab(btn, id) {
@@ -1303,71 +1318,23 @@ function clearTraffic() {
 
 // ─── SSE Stream ───────────────────────────────────────────────────────────────
 function startStream() {
-    // Prevent connection explosion: abort any existing stream reader first
-    if (window.evtSourceController) {
-        try { window.evtSourceController.abort(); } catch(e) {}
+    // Prevent connection explosion: close any existing EventSource first
+    if (window.evtSource) {
+        try { window.evtSource.close(); } catch(e) {}
     }
-    
-    const controller = new AbortController();
-    const signal = controller.signal;
-    window.evtSourceController = controller;
-    
-    window.evtSource = {
-        close: () => {
-            try { controller.abort(); } catch(e) {}
-        }
+    window.evtSource = new EventSource(API + '/api/events');
+    window.evtSource.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'ping') return;
+        if (d.event_type === 'traffic') { appendTraffic(d); return; }
+        loadStats();
+        prependAlert(d);
+        if (d.attack_type?.includes('IP Block') || d.attack_type?.includes('Unban')) loadBanned();
+        if (d.status === 'CONFIG_UPDATE') loadRules();
     };
-    
-    fetch(API + '/api/events', { signal }).then(response => {
-        if (!response.body) {
-            console.error('ReadableStream not supported on this browser.');
-            return;
-        }
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
-        let buffer = '';
-        
-        function read() {
-            reader.read().then(({ done, value }) => {
-                if (done) return;
-                buffer += decoder.decode(value, { stream: true });
-                
-                const parts = buffer.split('\n\n');
-                buffer = parts.pop();
-                
-                parts.forEach(part => {
-                    const lines = part.split('\n');
-                    lines.forEach(line => {
-                        if (line.startsWith('data: ')) {
-                            try {
-                                const dataStr = line.slice(6).trim();
-                                const d = JSON.parse(dataStr);
-                                if (d.type === 'ping') return;
-                                if (d.event_type === 'traffic') { appendTraffic(d); return; }
-                                loadStats();
-                                prependAlert(d);
-                                if (d.attack_type?.includes('IP Block') || d.attack_type?.includes('Unban')) loadBanned();
-                                if (d.status === 'CONFIG_UPDATE') loadRules();
-                            } catch(e) {}
-                        }
-                    });
-                });
-                
-                read();
-            }).catch(err => {
-                if (err.name !== 'AbortError') {
-                    console.warn('SSE stream error, reconnecting in 3s:', err);
-                    setTimeout(startStream, 3000);
-                }
-            });
-        }
-        read();
-    }).catch(err => {
-        if (err.name !== 'AbortError') {
-            console.warn('SSE fetch failed, reconnecting in 3s:', err);
-            setTimeout(startStream, 3000);
-        }
-    });
+    window.evtSource.onerror = err => {
+        console.warn('SSE telemetry connection interrupted, browser is attempting automatic reconnect:', err);
+    };
 }
 
 // ─── Charts ───────────────────────────────────────────────────────────────────
@@ -1788,14 +1755,16 @@ function checkSiemAuth() {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
-    loadStats();
-    loadAlerts();
-    loadBanned();
-    loadRules();
-    loadTraffic();
-    startStream();
-    // Refresh stats every 15s
-    setInterval(loadStats, 15000);
+    fetchActiveTunnelURL(() => {
+        loadStats();
+        loadAlerts();
+        loadBanned();
+        loadRules();
+        loadTraffic();
+        startStream();
+        // Refresh stats every 15s
+        setInterval(loadStats, 15000);
+    });
 }
 
 // Set logout trigger
