@@ -729,9 +729,9 @@
     <div class="header-right">
         <a href="#" id="btn-export" class="btn">📥 Export Report</a>
         <a href="#" id="btn-logout" class="btn" style="background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #f87171; margin-left: 8px; display: none;">🚪 Logout</a>
-        <div class="pulse-badge">
-            <div class="pulse-dot"></div>
-            SOC LIVE
+        <div class="pulse-badge" id="api-status-badge" style="cursor: pointer; user-select: none;" onclick="openApiSettings()" title="Click to configure API connection">
+            <div class="pulse-dot" id="api-status-dot"></div>
+            <span id="api-status-text">CONNECTING...</span>
         </div>
     </div>
 </header>
@@ -1200,6 +1200,36 @@
     </div>
 </div>
 
+<!-- ═══ API SETTINGS MODAL ═══ -->
+<div class="modal-overlay" id="api-settings-modal" onclick="if (event.target === this) closeApiSettings()">
+    <div class="modal-box">
+        <div class="modal-icon">⚙️</div>
+        <div class="modal-title" style="color: var(--blue); text-shadow: 0 0 10px rgba(6,182,212,0.2);">API Connection Settings</div>
+        <div class="modal-sub">Configure how the dashboard connects to your local Security Backend.</div>
+        
+        <form onsubmit="saveApiSettings(event)" style="text-align: left;">
+            <div class="auth-form-group" style="margin-bottom: 1.2rem;">
+                <label style="color: var(--text); font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem; display: block;">Connection Mode</label>
+                <select id="api-mode-select" class="auth-input" onchange="toggleApiModeFields()" style="width: 100%; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 8px; font-family: 'Outfit', sans-serif;">
+                    <option value="auto">Automatic (GitHub Tunnel Sync)</option>
+                    <option value="manual">Manual Override (Custom URL)</option>
+                </select>
+            </div>
+            
+            <div class="auth-form-group" id="api-manual-group" style="margin-bottom: 1.5rem; display: none;">
+                <label style="color: var(--text); font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem; display: block;">Security Backend URL</label>
+                <input type="text" id="api-manual-url" class="auth-input" placeholder="e.g. http://localhost:5000" style="width: 100%; background: #0b0f19; border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 8px; font-family: 'Outfit', sans-serif;">
+                <small style="color: var(--muted); font-size: 0.72rem; margin-top: 0.3rem; display: block;">Enter local endpoint (e.g. http://localhost:5000) or a custom tunnel URL.</small>
+            </div>
+            
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-red" style="flex: 1; justify-content: center; padding: 0.7rem;" onclick="closeApiSettings()">Cancel</button>
+                <button type="submit" class="btn btn-green" style="flex: 1; justify-content: center; padding: 0.7rem; background: linear-gradient(135deg, #06b6d4, #8b5cf6); border-color: rgba(6,182,212,0.4);">Save & Reload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 // ─── Global Error Handling & Banner ──────────────────────────────────────────
 function showBannerError(msg) {
@@ -1235,33 +1265,147 @@ window.onunhandledrejection = function(event) {
     showBannerError(`Promise Rejected: ${event.reason}`);
 };
 
-let API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? window.location.protocol + '//' + window.location.hostname + ':5000'
-    : '';
+let API = '';
+
+function updateStatusBadge(status, details) {
+    const badge = document.getElementById('api-status-badge');
+    const dot = document.getElementById('api-status-dot');
+    const text = document.getElementById('api-status-text');
+    if (!badge || !dot || !text) return;
+    
+    if (status === 'online') {
+        badge.style.background = 'rgba(16, 185, 129, 0.08)';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = 'var(--green)';
+        dot.style.background = 'var(--green)';
+        dot.style.boxShadow = '0 0 8px var(--green)';
+        text.innerText = 'ONLINE';
+        badge.title = 'Backend API is connected at: ' + details;
+    } else if (status === 'offline') {
+        badge.style.background = 'rgba(239, 68, 68, 0.08)';
+        badge.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+        badge.style.color = 'var(--red)';
+        dot.style.background = 'var(--red)';
+        dot.style.boxShadow = '0 0 8px var(--red)';
+        text.innerText = 'OFFLINE';
+        badge.title = 'Failed to connect to: ' + details + '. Click to configure.';
+    } else {
+        badge.style.background = 'rgba(6, 182, 212, 0.08)';
+        badge.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+        badge.style.color = 'var(--blue)';
+        dot.style.background = 'var(--blue)';
+        dot.style.boxShadow = '0 0 8px var(--blue)';
+        text.innerText = 'CONNECTING...';
+        badge.title = 'Connecting to backend...';
+    }
+}
+
+function verifyApiConnection(url, callback) {
+    updateStatusBadge('connecting');
+    fetch(url + '/api/stats')
+        .then(res => {
+            if (res.ok) {
+                API = url;
+                updateStatusBadge('online', url);
+                callback();
+            } else {
+                throw new Error('Non-ok response');
+            }
+        })
+        .catch(err => {
+            console.error('API verification failed for ' + url + ':', err);
+            updateStatusBadge('offline', url);
+            showBannerError('Failed to connect to Security Backend at ' + url + '. Click "CONNECTING..." status pill in the top header to configure.');
+            API = url;
+            callback();
+        });
+}
 
 function fetchActiveTunnelURL(callback) {
-    if (API) {
-        callback();
+    // 1. Check for manual override
+    const override = localStorage.getItem('siem_api_override');
+    if (override) {
+        console.log('Using manual API override:', override);
+        verifyApiConnection(override, callback);
         return;
     }
+    
+    // 2. Default if running locally
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const localUrl = window.location.protocol + '//' + window.location.hostname + ':5000';
+        verifyApiConnection(localUrl, callback);
+        return;
+    }
+    
+    // 3. Fetch tunnel URL from GitHub
     const gitUrl = 'https://raw.githubusercontent.com/PratyushPandey31/Security/main/tunnel_url.txt';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', gitUrl + '?t=' + new Date().getTime(), true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
+            let targetUrl = 'http://localhost:5000';
             if (xhr.status === 200) {
-                API = xhr.responseText.trim();
-                console.log('Active Tunnel API loaded:', API);
-                callback();
+                targetUrl = xhr.responseText.trim();
+                console.log('Fetched tunnel URL from GitHub:', targetUrl);
             } else {
-                console.error('Failed to load active tunnel URL, falling back to localhost');
-                API = 'http://localhost:5000';
-                callback();
+                console.error('Failed to load tunnel URL from GitHub, using default fallback');
             }
+            verifyApiConnection(targetUrl, callback);
         }
     };
     xhr.send();
 }
+
+// ─── API Settings Modal Logic ──────────────────────────────────────────────────
+window.openApiSettings = function() {
+    document.getElementById('api-settings-modal').classList.add('show');
+    const override = localStorage.getItem('siem_api_override');
+    const select = document.getElementById('api-mode-select');
+    const input = document.getElementById('api-manual-url');
+    
+    if (override) {
+        select.value = 'manual';
+        input.value = override;
+    } else {
+        select.value = 'auto';
+        input.value = API || 'http://localhost:5000';
+    }
+    toggleApiModeFields();
+};
+
+window.closeApiSettings = function() {
+    document.getElementById('api-settings-modal').classList.remove('show');
+};
+
+window.toggleApiModeFields = function() {
+    const select = document.getElementById('api-mode-select');
+    const manualGroup = document.getElementById('api-manual-group');
+    if (select.value === 'manual') {
+        manualGroup.style.display = 'block';
+    } else {
+        manualGroup.style.display = 'none';
+    }
+};
+
+window.saveApiSettings = function(event) {
+    event.preventDefault();
+    const select = document.getElementById('api-mode-select');
+    const input = document.getElementById('api-manual-url');
+    
+    if (select.value === 'manual') {
+        let val = input.value.trim();
+        if (val.endsWith('/')) val = val.slice(0, -1);
+        if (!val.startsWith('http://') && !val.startsWith('https://')) {
+            val = 'http://' + val;
+        }
+        localStorage.setItem('siem_api_override', val);
+    } else {
+        localStorage.removeItem('siem_api_override');
+    }
+    
+    closeApiSettings();
+    location.reload();
+};
 
 // ─── Tab switching ────────────────────────────────────────────────────────────
 function switchTab(btn, id) {
