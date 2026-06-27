@@ -14,7 +14,7 @@ This edition features a **fully deployed public SOC Dashboard** integrated with 
 
 ## 🌟 Platform Capabilities & Core Features
 
-### 1. SIEM SOC Dashboard Gateway (New)
+### 1. SIEM SOC Dashboard Gateway
 *   **Security Gateway Protection**: The public SIEM dashboard is protected by a sleek, glassmorphic auth overlay. Telemetry endpoints and real-time feeds only initialize upon successful operator authentication.
 *   **Default Analyst Account**: Auto-registers a default analyst credential set upon first load.
 *   **Local Storage Analyst Vault**: Analysts can register new security operator cards directly. Credentials persist across browser reloads using secure local storage serialization.
@@ -33,7 +33,7 @@ This edition features a **fully deployed public SOC Dashboard** integrated with 
 
 ### 4. Real-Time Telemetry Log Streamer & SSL Tunneling
 *   **Server-Sent Events (SSE)**: Live HTTP request console displaying network actions (PASS, BLOCK, DECEPTION), response codes, and WAF rules matched as they route.
-*   **HTTPS Tunnel Routing**: Integrated secure SSL tunnels (via `localhost.run` or `Serveo`) to forward telemetry to public Vercel dashboards, bypassing modern browser **Mixed Content** security blocks.
+*   **HTTPS Tunnel Routing**: Integrated secure SSL tunnels (via `localhost.run`) to forward telemetry to public Vercel dashboards, bypassing modern browser **Mixed Content** security blocks.
 *   **Visual Threat Vector Tracing**: Dynamic SVG Map plotting threat vectors and drawing glowing attack path lines from geolocations when alerts trigger.
 
 ### 5. Interactive 6+ Analytics Visualizations
@@ -57,39 +57,39 @@ This edition features a **fully deployed public SOC Dashboard** integrated with 
 
 ## 📐 Microservices Architecture Map
 
-```text
-                               +-------------------------------------+
-                               |           Client / Attacker         |
-                               +-------------------------------------+
-                                                  |
-                                                  | Port 8080 (Gateway Proxy)
-                                                  v
-                               +-------------------------------------+
-                               |     Proxy WAF Gateway (proxy_waf)   |
-                               +-------------------------------------+
-                                  /                               \
-                      Legitimate /                                 \ Suspicious / Admin
-                      Traffic   /                                   \ Path Request
-                               v                                     v
-         +---------------------------+                 +---------------------------+
-         |    Legitimate Web App     |                 |      Decoy Honeypot       |
-         |  (web_app - Users / Vault)|                 |     (honeypot_decoy)      |
-         +---------------------------+                 +---------------------------+
-                               \                                     /
-                                \-------> Send Alert Endpoint <-----/
-                                                 |
-                                                 v
-                               +-------------------------------------+
-                               |   Security Database & API Backend   |
-                               |       (security_backend:5000)       |
-                               +-------------------------------------+
-                                                 ^
-                                                 | Port 5000 (HTTPS Public Tunnel)
-                                                 v
-                               +-------------------------------------+
-                               |       SIEM SOC Dashboard Server     |
-                               |    (Deployed: pratyush-cloudshield) |
-                               +-------------------------------------+
+```mermaid
+graph TD
+    %% Nodes
+    Attacker[💻 Attacker / Client]
+    WAF[🛡️ Proxy WAF Gateway <br> Port 8080]
+    WebApp[📦 Legitimate Web App <br> Port 8000]
+    Honeypot[🍯 Decoy Honeypot <br> Port 9000]
+    Backend[💾 Security API Backend <br> Port 5000]
+    Tunnel[🔌 Secure Tunnel <br> localhost.run]
+    Vercel[📊 Public SIEM Dashboard <br> Vercel Deployment]
+
+    %% Styles
+    classDef red fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fecaca;
+    classDef green fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
+    classDef blue fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
+    classDef orange fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#ffedd5;
+    
+    class Attacker,Honeypot red;
+    class WAF,Backend blue;
+    class WebApp green;
+    class Tunnel,Vercel orange;
+
+    %% Flows
+    Attacker -->|HTTP Requests| WAF
+    WAF -->|Normal Path| WebApp
+    WAF -->|Admin Path Probe / Exploit| Honeypot
+    
+    WebApp -->|Log Alerts / Traffic| Backend
+    Honeypot -->|Mitigate Command & Ban IP| Backend
+    WAF -->|Block Events| Backend
+    
+    Backend -->|Local Link| Tunnel
+    Tunnel -->|HTTPS Forwarding| Vercel
 ```
 
 ---
