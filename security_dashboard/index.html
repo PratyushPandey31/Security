@@ -1300,24 +1300,60 @@ function updateStatusBadge(status, details) {
     }
 }
 
+function safeFetchJson(url, options) {
+    if (!API && !url.includes('/api/stats')) {
+        return Promise.reject(new Error('Security Backend API is offline'));
+    }
+    return fetch(url, options)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('HTTP error ' + res.status);
+            }
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server returned HTML or text response instead of JSON");
+            }
+            return res.json();
+        });
+}
+
 function verifyApiConnection(url, callback) {
     updateStatusBadge('connecting');
-    fetch(url + '/api/stats')
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    
+    fetch(url + '/api/stats', { signal: controller.signal })
         .then(res => {
-            if (res.ok) {
+            clearTimeout(timeoutId);
+            const contentType = res.headers.get("content-type");
+            if (res.ok && contentType && contentType.includes("application/json")) {
                 API = url;
                 updateStatusBadge('online', url);
                 callback();
             } else {
-                throw new Error('Non-ok response');
+                throw new Error('Non-JSON response or HTTP status error');
             }
         })
         .catch(err => {
+            clearTimeout(timeoutId);
             console.error('API verification failed for ' + url + ':', err);
+            API = ''; // Keep API empty to prevent relative/fallback requests
             updateStatusBadge('offline', url);
-            showBannerError('Failed to connect to Security Backend at ' + url + '. Click "CONNECTING..." status pill in the top header to configure.');
-            API = url;
-            callback();
+            
+            // Render friendly offline messages in UI containers
+            const feed = document.getElementById('alert-feed');
+            if (feed) feed.innerHTML = '<div class="empty">🔴 Security Backend is offline.<br><br>Please start your local services using <code>python run_locally.py</code> and click the "OFFLINE" status badge in the header to link your tunnel or port.</div>';
+            
+            const logsT = document.getElementById('traffic-log-table');
+            if (logsT) logsT.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">🔴 Offline – Waiting for backend connection...</td></tr>';
+            
+            const bannedT = document.getElementById('banned-ip-table');
+            if (bannedT) bannedT.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:2rem;">🔴 Offline – Waiting for backend connection...</td></tr>';
+            
+            const rulesT = document.getElementById('rules-table');
+            if (rulesT) rulesT.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">🔴 Offline – Waiting for backend connection...</td></tr>';
+            
+            showBannerError('Failed to connect to Security Backend at ' + url + '. Click "OFFLINE" status pill to configure.');
         });
 }
 
@@ -1337,23 +1373,9 @@ function fetchActiveTunnelURL(callback) {
         return;
     }
     
-    // 3. Fetch tunnel URL from GitHub
-    const gitUrl = 'https://raw.githubusercontent.com/PratyushPandey31/Security/main/tunnel_url.txt';
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', gitUrl + '?t=' + new Date().getTime(), true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            let targetUrl = 'http://localhost:5000';
-            if (xhr.status === 200) {
-                targetUrl = xhr.responseText.trim();
-                console.log('Fetched tunnel URL from GitHub:', targetUrl);
-            } else {
-                console.error('Failed to load tunnel URL from GitHub, using default fallback');
-            }
-            verifyApiConnection(targetUrl, callback);
-        }
-    };
-    xhr.send();
+    // 3. Fallback to localhost if raw tunnel url is deleted/missing
+    const localFallback = 'http://localhost:5000';
+    verifyApiConnection(localFallback, callback);
 }
 
 // ─── API Settings Modal Logic ──────────────────────────────────────────────────
@@ -1417,7 +1439,7 @@ function switchTab(btn, id) {
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 function loadStats() {
-    fetch(API + '/api/stats').then(r => r.json()).then(d => {
+    safeFetchJson(API + '/api/stats').then(d => {
         animCount('stat-threats', d.total_alerts || 0);
         animCount('stat-critical', d.critical_alerts || 0);
         animCount('stat-honeypot', d.honeypot_triggers || 0);
@@ -1444,7 +1466,7 @@ function sevBadge(s) {
 }
 
 function loadAlerts() {
-    fetch(API + '/api/alerts?limit=30').then(r => r.json()).then(alerts => {
+    safeFetchJson(API + '/api/alerts?limit=30').then(alerts => {
         const feed = document.getElementById('alert-feed');
         if (!alerts.length) { feed.innerHTML = '<div class="empty">No threats logged. Gateway is clean.</div>'; return; }
         feed.innerHTML = '';
@@ -1590,7 +1612,7 @@ function triggerThreatMapVector(ip, type, severity) {
 
 // ─── Banned IPs ───────────────────────────────────────────────────────────────
 function loadBanned() {
-    fetch(API + '/api/banned-ips').then(r => r.json()).then(data => {
+    safeFetchJson(API + '/api/banned-ips').then(data => {
         const tbody = document.getElementById('banned-tbody');
         if (!data.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">No active IP bans.</td></tr>'; return; }
         tbody.innerHTML = data.map(b => `<tr>
@@ -1609,7 +1631,7 @@ function unbanIp(ip) {
 
 // ─── WAF Rules ────────────────────────────────────────────────────────────────
 function loadRules() {
-    fetch(API + '/api/waf/rules').then(r => r.json()).then(rules => {
+    safeFetchJson(API + '/api/waf/rules').then(rules => {
         const tbody = document.getElementById('rules-tbody');
         if (!rules.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">No WAF rules configured.</td></tr>'; return; }
         tbody.innerHTML = rules.map(r => `<tr>
@@ -1757,7 +1779,7 @@ function renderReport(report) {
 
 // ─── Traffic Inspector ────────────────────────────────────────────────────────
 function loadTraffic() {
-    fetch(API + '/api/traffic?limit=80').then(r => r.json()).then(logs => {
+    safeFetchJson(API + '/api/traffic?limit=80').then(logs => {
         const box = document.getElementById('trafficConsole');
         if (!logs.length) { box.innerHTML = '<div class="console-line system">[SYSTEM] No traffic captured yet.</div>'; return; }
         box.innerHTML = '';
@@ -1838,8 +1860,8 @@ const TOOLTIP = {
 
 function renderCharts() {
     Promise.all([
-        fetch(API + '/api/alerts?limit=500').then(r => r.json()),
-        fetch(API + '/api/traffic?limit=500').then(r => r.json())
+        safeFetchJson(API + '/api/alerts?limit=500'),
+        safeFetchJson(API + '/api/traffic?limit=500')
     ]).then(([alerts, traffic]) => {
 
         // ── Analytics Summary Strip ───────────────────────────────────────
