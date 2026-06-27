@@ -26,3 +26,33 @@ env/
 Thumbs.db
 *.log
 *.tmp
+
+# ─── SECRETS & ENVIRONMENT VARIABLES ─────────────────────────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+
+# SSH Keys
+*.pem
+*.key
+id_rsa
+id_ed25519
+*.ppk
+
+# API Keys / Credentials
+secrets.json
+credentials.json
+service_account.json
+*_credentials.json
+*_secret*
+config.secret.*
+
+# Tunnel URLs (contain live public URLs — auto-generated each session)
+tunnel_url.txt
+
+# OS / Temp
+*.swp
+*.swo
+~$*
