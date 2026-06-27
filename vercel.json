@@ -1,0 +1,32 @@
+{
+  "rewrites": [
+    {
+      "source": "/cloudshield_report.pdf",
+      "destination": "/security_dashboard/cloudshield_report.pdf"
+    },
+    {
+      "source": "/cloudshield_report.html",
+      "destination": "/security_dashboard/cloudshield_report.html"
+    },
+    {
+      "source": "/chart.min.js",
+      "destination": "/security_dashboard/chart.min.js"
+    },
+    {
+      "source": "/app.js",
+      "destination": "/security_dashboard/app.js"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/security_dashboard/styles.css"
+    },
+    {
+      "source": "/",
+      "destination": "/security_dashboard/index.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/security_dashboard/index.html"
+    }
+  ]
+}
