@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudShield v4 — Project Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #06b6d4;
+    --purple: #8b5cf6;
+    --red: #ef4444;
+    --green: #10b981;
+    --orange: #f97316;
+    --yellow: #f59e0b;
+    --bg: #030712;
+    --surface: #0d1117;
+    --card: #111827;
+    --border: #1f2937;
+    --muted: #6b7280;
+    --text: #f3f4f6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+
+  /* ── Cover Page ── */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at 30% 20%, rgba(6,182,212,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.1) 0%, transparent 55%),
+                var(--bg);
+    padding: 3rem;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .cover-badge {
+    background: rgba(6,182,212,0.1);
+    border: 1px solid rgba(6,182,212,0.3);
+    color: var(--blue);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    display: inline-block;
+  }
+
+  .cover-logo {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  .cover-logo span {
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cover-tagline {
+    font-size: 1.1rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 3rem;
+    font-weight: 600;
+  }
+
+  .cover-divider {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    margin: 2rem auto;
+    border-radius: 2px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cover-meta-item {
+    text-align: center;
+  }
+
+  .cover-meta-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .cover-meta-value {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .cover-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cover-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .cover-stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cover-stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Page Layout ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    page-break-after: always;
+  }
+
+  .page:last-child { page-break-after: auto; }
+
+  /* ── Section Headers ── */
+  .section-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 1rem; margin-top: 2rem; }
+  h2:first-child { margin-top: 0; }
+  h3 { font-size: 1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.5rem; margin-top: 1.5rem; }
+
+  p { color: #9ca3af; margin-bottom: 0.75rem; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-icon {
+    font-size: 1.4rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .card-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .badge-blue { background: rgba(6,182,212,0.15); color: var(--blue); border: 1px solid rgba(6,182,212,0.3); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+  .badge-orange { background: rgba(249,115,22,0.15); color: var(--orange); border: 1px solid rgba(249,115,22,0.3); }
+  .badge-purple { background: rgba(139,92,246,0.15); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
+
+  /* ── Stat Grid ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  th {
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(31,41,55,0.5);
+    color: #d1d5db;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── Code ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    background: rgba(6,182,212,0.08);
+    color: var(--blue);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+  }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    color: var(--green);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  /* ── Architecture Diagram ── */
+  .arch-diagram {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--blue);
+    white-space: pre;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  /* ── Feature List ── */
+  .feature-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.82rem;
+    color: #d1d5db;
+  }
+
+  .feature-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 2rem 0;
+  }
+
+  /* ── Timeline ── */
+  .timeline { margin-bottom: 1rem; }
+
+  .timeline-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+    margin-top: 5px;
+    box-shadow: 0 0 8px var(--blue);
+  }
+
+  .timeline-content { flex: 1; }
+
+  .timeline-title {
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-desc {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  /* ── Footer ── */
+  .report-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #030712 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cover { min-height: 100vh; }
+    .no-print { display: none; }
+  }
+
+  /* ── Print Button ── */
+  .print-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem 1.75rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(6,182,212,0.35);
+    letter-spacing: 0.5px;
+    z-index: 999;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(6,182,212,0.5); }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 Download PDF</button>
+
+<!-- ══════════════════ COVER PAGE ══════════════════ -->
+<div class="cover">
+  <div class="cover-badge">🛡️ Cybersecurity Project Report</div>
+
+  <div class="cover-logo">Cloud<span>Shield</span></div>
+  <div style="font-size:1.1rem;color:#8b5cf6;font-weight:700;letter-spacing:2px;margin-bottom:0.25rem;">VERSION 4.0</div>
+  <div class="cover-tagline">Enterprise Cyber Defense, Active Deception & Security Audit Suite</div>
+
+  <div class="cover-divider"></div>
+
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Author</div>
+      <div class="cover-meta-value">Pratyush Pandey</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Type</div>
+      <div class="cover-meta-value">Security Systems Project</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Date</div>
+      <div class="cover-meta-value">June 2026</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Status</div>
+      <div class="cover-meta-value" style="color:#10b981">✅ Deployed</div>
+    </div>
+  </div>
+
+  <div class="cover-stats">
+    <div class="cover-stat">
+      <div class="cover-stat-num">5</div>
+      <div class="cover-stat-label">Microservices</div>
+    </div>
+    <div class="cover-stat">
+      <div class="cover-stat-num">6+</div>
+      <div class="cover-stat-label">Analytics Charts</div>
+    </div>
+    <div class="cover-stat">
+      <div class="cover-stat-num">∞</div>
+      <div class="cover-stat-label">Live Telemetry</div>
+    </div>
+    <div class="cover-stat">
+      <div class="cover-stat-num">A+</div>
+      <div class="cover-stat-label">Security Grade</div>
+    </div>
+  </div>
+
+  <div style="margin-top:3rem;font-size:0.75rem;color:var(--muted);">
+    Live: <span style="color:var(--blue)">pratyush-cloudshield-siem.vercel.app</span> &nbsp;|&nbsp; 
+    Code: <span style="color:var(--purple)">github.com/PratyushPandey31/Security</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 1 — EXECUTIVE SUMMARY ══════════════════ -->
+<div class="page">
+  <div class="section-tag">01 — Executive Summary</div>
+  <h1>Project Overview</h1>
+  <p>CloudShield v4 is a production-grade, zero-trust cloud security virtualization suite built for cybersecurity education, demonstration, and research. It simulates a real-world enterprise Security Operations Center (SOC) with live threat detection, active deception, cryptographic data protection, and automated vulnerability scanning.</p>
+
+  <p>The platform is fully deployed and accessible publicly. The SIEM dashboard on Vercel connects to a local microservice backend through an auto-established HTTPS tunnel, enabling real-time telemetry from any network without browser security restrictions.</p>
+
+  <div class="divider"></div>
+
+  <h2>📊 Platform Metrics</h2>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--blue)">5</div>
+      <div class="stat-label">Microservices</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--purple)">6+</div>
+      <div class="stat-label">Charts & Visualizations</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--red)">54</div>
+      <div class="stat-label">Threats Detected (Live)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">RC4</div>
+      <div class="stat-label">Encryption Algorithm</div>
+    </div>
+  </div>
+
+  <h2>🌐 Deployment URLs</h2>
+  <table>
+    <thead><tr><th>Resource</th><th>URL</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>SOC Dashboard (Public)</td><td><code>pratyush-cloudshield-siem.vercel.app</code></td><td><span class="card-badge badge-green">LIVE</span></td></tr>
+      <tr><td>GitHub Repository</td><td><code>github.com/PratyushPandey31/Security</code></td><td><span class="card-badge badge-green">PUBLIC</span></td></tr>
+      <tr><td>Local Dashboard</td><td><code>http://localhost:8081</code></td><td><span class="card-badge badge-blue">LOCAL</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="report-footer">
+    <span>CloudShield v4 — Project Report</span>
+    <span>Pratyush Pandey | June 2026</span>
+    <span>Page 1</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 2 — ARCHITECTURE ══════════════════ -->
+<div class="page">
+  <div class="section-tag">02 — System Architecture</div>
+  <h1>Microservices Architecture</h1>
+  <p>CloudShield follows a microservices pattern where each security component runs as an independent service. Traffic flows through the WAF Proxy Gateway, which routes requests to either the legitimate web application or the deception honeypot depending on behavior patterns.</p>
+
+  <div class="arch-diagram">┌──────────────────────────────────────────────────────────────────────┐
+│                      CLOUDSHIELD v4 ARCHITECTURE                     │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│   [💻 Attacker / Client]                                             │
+│           │                                                          │
+│           ▼                                                          │
+│   [🛡️ WAF Proxy Gateway — Port 8080]                                │
+│   ├── RegEx Rule Engine (SQLi, XSS, Path Traversal)                  │
+│   ├── Rate Limiter & IP Blocklist                                    │
+│   └── Traffic Logger → Security API                                  │
+│           │                                                          │
+│     ┌─────┴──────┐                                                   │
+│     │            │                                                   │
+│     ▼            ▼                                                   │
+│ [📦 Web App] [🍯 Honeypot]                                           │
+│  Port 8000   Port 9000                                               │
+│ Flask/SQLite  Decoy Terminal                                         │
+│     │            │                                                   │
+│     └─────┬──────┘                                                   │
+│           │                                                          │
+│           ▼                                                          │
+│   [💾 Security API Backend — Port 5000]                             │
+│   ├── SQLite DB (RC4 Encrypted)                                      │
+│   ├── SSE Event Stream (/api/events)                                 │
+│   └── REST API (alerts, traffic, bans, rules)                        │
+│           │                                                          │
+│           ▼                                                          │
+│   [🔌 SSH Tunnel — localhost.run]                                    │
+│           │                                                          │
+│           ▼                                                          │
+│   [📊 Vercel SIEM Dashboard — PUBLIC]                               │
+│   pratyush-cloudshield-siem.vercel.app                              │
+└──────────────────────────────────────────────────────────────────────┘</div>
+
+  <h2>🔌 Service Port Configuration</h2>
+  <table>
+    <thead><tr><th>Service</th><th>Port</th><th>Technology</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>WAF Proxy Gateway</td><td><code>8080</code></td><td>Python, Flask</td><td>Traffic inspection & routing</td></tr>
+      <tr><td>Legitimate Web App</td><td><code>8000</code></td><td>Python, Flask, SQLite</td><td>Portal with auth & file vault</td></tr>
+      <tr><td>Honeypot Decoy</td><td><code>9000</code></td><td>Python, Flask</td><td>Admin path deception terminal</td></tr>
+      <tr><td>Security API Backend</td><td><code>5000</code></td><td>Python, Flask, SSE</td><td>Centralized alert & data store</td></tr>
+      <tr><td>SIEM Dashboard</td><td><code>8081</code></td><td>HTML5, CSS3, Chart.js</td><td>Real-time monitoring UI</td></tr>
+    </tbody>
+  </table>
+
+  <div class="report-footer">
+    <span>CloudShield v4 — Project Report</span>
+    <span>Pratyush Pandey | June 2026</span>
+    <span>Page 2</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 3 — FEATURES ══════════════════ -->
+<div class="page">
+  <div class="section-tag">03 — Core Features</div>
+  <h1>Platform Capabilities</h1>
+
+  <div class="feature-list">
+    <div class="feature-item"><span class="feature-icon">🛡️</span><div><strong>WAF Proxy Gateway</strong> — RegEx-based rule engine blocks SQLi, XSS, path traversal, brute-force patterns in real-time</div></div>
+    <div class="feature-item"><span class="feature-icon">🍯</span><div><strong>Active Deception Honeypot</strong> — Transparent redirect to mock terminal sandbox captures attacker command executions</div></div>
+    <div class="feature-item"><span class="feature-icon">🔐</span><div><strong>Cryptographic Vault</strong> — RC4 stream cipher encrypts all uploaded files at-rest inside SQLite with session-key derivation</div></div>
+    <div class="feature-item"><span class="feature-icon">📡</span><div><strong>SSE Telemetry Stream</strong> — Real-time Server-Sent Events feed powers live dashboard updates without polling</div></div>
+    <div class="feature-item"><span class="feature-icon">🗺️</span><div><strong>Live Threat Map</strong> — SVG world map with dynamic Bezier curved attack vector animations per incoming alert</div></div>
+    <div class="feature-item"><span class="feature-icon">📊</span><div><strong>Analytics Suite</strong> — 6 Chart.js visualizations: area charts, doughnuts, horizontal bars with gradient fills</div></div>
+    <div class="feature-item"><span class="feature-icon">⚡</span><div><strong>Vulnerability Auditor</strong> — Multi-stage pentest scanner with conic radar UI, grades A–F, CSV export</div></div>
+    <div class="feature-item"><span class="feature-icon">🔌</span><div><strong>Auto HTTPS Tunnel</strong> — SSH tunnel to localhost.run starts in background thread, URL auto-pushed to GitHub</div></div>
+    <div class="feature-item"><span class="feature-icon">👤</span><div><strong>Zero-Trust Auth</strong> — Glassmorphic login with rotating SVG lock, local storage session vault, secure logout</div></div>
+    <div class="feature-item"><span class="feature-icon">🚫</span><div><strong>IP Ban System</strong> — Automatic firewall bans from honeypot triggers, manual unban via SOC dashboard</div></div>
+    <div class="feature-item"><span class="feature-icon">🔑</span><div><strong>MFA Simulation</strong> — 6-digit time-based verification flow matching standard authentication workflows</div></div>
+    <div class="feature-item"><span class="feature-icon">🐳</span><div><strong>Docker Support</strong> — Full docker-compose.yml for one-command container cluster deployment</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2>🔬 Security Demonstrations</h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:var(--red)"></div>
+      <div class="timeline-content">
+        <div class="timeline-title">SQL Injection Interception</div>
+        <div class="timeline-desc">Submit <code>admin' OR '1'='1</code> as username → WAF blocks instantly → SIEM alert fires → map draws attack vector</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:var(--orange)"></div>
+      <div class="timeline-content">
+        <div class="timeline-title">Honeypot Admin Redirect</div>
+        <div class="timeline-desc">Visit <code>/admin</code> → silently redirected to mock terminal → execute <code>whoami</code> → auto IP ban triggered</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:var(--purple)"></div>
+      <div class="timeline-content">
+        <div class="timeline-title">At-Rest Encryption Proof</div>
+        <div class="timeline-desc">Upload file to vault → toggle "View raw payload" → see base64 RC4 ciphertext stored in SQLite</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background:var(--green)"></div>
+      <div class="timeline-content">
+        <div class="timeline-title">Vulnerability Scan Report</div>
+        <div class="timeline-desc">Start scan → conic radar sweeps → A–F grade scorecard generated → CSV auto-downloaded</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    <span>CloudShield v4 — Project Report</span>
+    <span>Pratyush Pandey | June 2026</span>
+    <span>Page 3</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 4 — TECH STACK & API ══════════════════ -->
+<div class="page">
+  <div class="section-tag">04 — Technical Specification</div>
+  <h1>Tech Stack & API Reference</h1>
+
+  <h2>📦 Technology Stack</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Backend Runtime</td><td>Python 3.8+, Flask</td><td>All 4 backend microservices</td></tr>
+      <tr><td>Database</td><td>SQLite</td><td>Alerts, traffic, bans, files storage</td></tr>
+      <tr><td>Encryption</td><td>RC4 Stream Cipher</td><td>At-rest file vault encryption</td></tr>
+      <tr><td>Frontend</td><td>HTML5, Vanilla CSS3</td><td>SIEM dashboard UI</td></tr>
+      <tr><td>Charts</td><td>Chart.js (local)</td><td>6 analytics visualizations</td></tr>
+      <tr><td>Fonts</td><td>Outfit, JetBrains Mono</td><td>UI typography and terminal display</td></tr>
+      <tr><td>Streaming</td><td>Server-Sent Events (SSE)</td><td>Real-time telemetry feed</td></tr>
+      <tr><td>Tunnel</td><td>localhost.run (SSH)</td><td>HTTPS forwarding to Vercel</td></tr>
+      <tr><td>Deployment</td><td>Vercel</td><td>Public SOC dashboard hosting</td></tr>
+      <tr><td>Containers</td><td>Docker, Docker Compose</td><td>Optional containerized deployment</td></tr>
+    </tbody>
+  </table>
+
+  <h2>🔌 Backend API Endpoints</h2>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>/api/stats</code></td><td>GET</td><td>Summary stats: total alerts, critical count, bans, honeypot triggers</td></tr>
+      <tr><td><code>/api/alerts</code></td><td>GET</td><td>Paginated alert log with attack type, severity, IP, timestamp</td></tr>
+      <tr><td><code>/api/traffic</code></td><td>GET/POST</td><td>WAF traffic log — PASS / BLOCK / DECEPTION events</td></tr>
+      <tr><td><code>/api/events</code></td><td>GET (SSE)</td><td>Real-time Server-Sent Events stream for live dashboard</td></tr>
+      <tr><td><code>/api/banned-ips</code></td><td>GET</td><td>Active IP ban list with ban time and reason</td></tr>
+      <tr><td><code>/api/banned-ips/unban</code></td><td>POST</td><td>Remove IP from blocklist</td></tr>
+      <tr><td><code>/api/waf-rules</code></td><td>GET/POST</td><td>Read and update WAF firewall rules</td></tr>
+      <tr><td><code>/api/scanner/audit</code></td><td>POST</td><td>Run multi-stage vulnerability audit against target URL</td></tr>
+      <tr><td><code>/api/reports/csv</code></td><td>GET</td><td>Download complete audit transaction log as CSV</td></tr>
+    </tbody>
+  </table>
+
+  <div class="report-footer">
+    <span>CloudShield v4 — Project Report</span>
+    <span>Pratyush Pandey | June 2026</span>
+    <span>Page 4</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 5 — UI DESIGN & CONCLUSION ══════════════════ -->
+<div class="page">
+  <div class="section-tag">05 — UI/UX Design & Conclusion</div>
+  <h1>Interface Design System</h1>
+
+  <h2>🎨 Design Language</h2>
+  <div class="feature-list">
+    <div class="feature-item"><span class="feature-icon">🌑</span><div><strong>Dark Glassmorphism</strong> — Deep navy base (#030712) with frosted glass panels, blur(16–25px), subtle white borders</div></div>
+    <div class="feature-item"><span class="feature-icon">✨</span><div><strong>Atmospheric Glow</strong> — Floating cyan, purple, red radial gradient blobs that animate slowly for depth</div></div>
+    <div class="feature-item"><span class="feature-icon">🔷</span><div><strong>Cyber Color Palette</strong> — Cyan #06b6d4, Purple #8b5cf6, Red #ef4444, Green #10b981, Orange #f97316</div></div>
+    <div class="feature-item"><span class="feature-icon">🔤</span><div><strong>Premium Typography</strong> — Outfit for UI elements, JetBrains Mono for IPs, code, terminal console output</div></div>
+    <div class="feature-item"><span class="feature-icon">💫</span><div><strong>Micro-animations</strong> — Bezier attack vectors, rotating SVG lock, conic radar sweep, rolling stat counters</div></div>
+    <div class="feature-item"><span class="feature-icon">🎯</span><div><strong>easeOutQuart Easing</strong> — All Chart.js animations use smooth cubic-bezier curves for premium feel</div></div>
+  </div>
+
+  <h2>📐 Design Tokens</h2>
+  <table>
+    <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+    <tbody>
+      <tr><td>Background</td><td><code>#030712</code></td><td>Page base color</td></tr>
+      <tr><td>Surface</td><td><code>rgba(17,24,39,0.45)</code></td><td>Card backgrounds</td></tr>
+      <tr><td>Border</td><td><code>rgba(55,65,81,0.4)</code></td><td>Card/input borders</td></tr>
+      <tr><td>Primary</td><td><code>#06b6d4</code> (Cyan)</td><td>Active state, focus, primary CTA</td></tr>
+      <tr><td>Accent</td><td><code>#8b5cf6</code> (Purple)</td><td>Gradient end, register tab</td></tr>
+      <tr><td>Danger</td><td><code>#ef4444</code> (Red)</td><td>CRITICAL severity, block events</td></tr>
+      <tr><td>Success</td><td><code>#10b981</code> (Green)</td><td>PASS events, low severity</td></tr>
+      <tr><td>Blur</td><td><code>blur(16–25px)</code></td><td>Glassmorphic backdrop</td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  <h2>🏁 Conclusion</h2>
+  <p>CloudShield v4 successfully demonstrates a comprehensive enterprise-grade cybersecurity stack. The platform integrates six distinct security disciplines — network proxying, intrusion deception, cryptographic protection, real-time monitoring, vulnerability assessment, and security analytics — into a cohesive, production-deployable microservices architecture.</p>
+  <p>The SIEM dashboard is publicly accessible and provides a visually stunning, data-rich interface that rivals commercial security platforms. The system is fully extensible for additional WAF rules, detection algorithms, or new service integrations.</p>
+
+  <div class="card" style="border-color: rgba(6,182,212,0.3); margin-top:1.5rem;">
+    <div class="card-head">
+      <span class="card-icon">🚀</span>
+      <span class="card-title">Live Demo Access</span>
+    </div>
+    <p style="margin:0;color:#9ca3af;">Dashboard: <strong style="color:var(--blue)">https://pratyush-cloudshield-siem.vercel.app</strong><br>
+    Default Login: <code>admin</code> / <code>admin123</code><br>
+    Source Code: <strong style="color:var(--purple)">github.com/PratyushPandey31/Security</strong></p>
+  </div>
+
+  <div class="report-footer">
+    <span>CloudShield v4 — Project Report</span>
+    <span>Pratyush Pandey | June 2026</span>
+    <span>Page 5 / End</span>
+  </div>
+</div>
+
+</body>
+</html>

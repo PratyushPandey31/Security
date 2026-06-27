@@ -44,81 +44,80 @@ def run_service(cmd, cwd, env_vars=None, service_name=""):
     return p
 
 def establish_tunnel():
-    print("[*] Initializing secure HTTPS tunnel (localhost.run)...")
-    # Launch localhost.run tunnel in background, piping output so we can parse it
-    p = subprocess.Popen(
-        ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        stdin=subprocess.DEVNULL,
-        text=True,
-        bufsize=1
-    )
-    
-    tunnel_url = None
-    start_time = time.time()
-    
-    # Read output to extract the random lhr.life tunnel URL
-    while True:
-        if time.time() - start_time > 20: # Timeout after 20 seconds
-            print("[!] Tunnel establishment timed out.")
-            break
-            
-        line = p.stdout.readline()
-        if not line:
-            break
-            
-        print(f"    [Tunnel] {line.strip()}")
-        if "lhr.life" in line:
-            match = re.search(r"https://[a-zA-Z0-9-]+\.lhr\.life", line)
-            if match:
-                tunnel_url = match.group(0)
-                print(f"[+] Tunnel URL detected: {tunnel_url}")
-                break
-                
-    if tunnel_url:
-        # Save to tunnel_url.txt
-        with open("tunnel_url.txt", "w") as f:
-            f.write(tunnel_url)
-            
-        print("[*] Committing and pushing tunnel URL to GitHub...")
-        try:
-            # We run git commands with a timeout and stdin=DEVNULL to prevent hanging the startup of other services
-            subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
-            subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
-            subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=15)
-            print("[+] Tunnel URL pushed successfully to GitHub!")
-        except Exception as e:
-            print(f"[!] Warning: Git push failed or timed out: {e}")
-            
-    # We must start a background thread/process to consume stdout so the tunnel process doesn't hang!
+    """Run SSH tunnel in background thread — non-blocking so backend starts immediately."""
     import threading
-    def consume_output(stream):
+
+    def _tunnel_worker():
+        print("[*] Initializing secure HTTPS tunnel (localhost.run) in background...")
         try:
-            for _ in stream:
-                pass
-        except Exception:
-            pass
-            
-    t = threading.Thread(target=consume_output, args=(p.stdout,), daemon=True)
+            p = subprocess.Popen(
+                ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                text=True,
+                bufsize=1
+            )
+
+            tunnel_url = None
+            start_time = time.time()
+
+            while True:
+                if time.time() - start_time > 20:
+                    print("[!] Tunnel establishment timed out — skipping tunnel.")
+                    break
+                line = p.stdout.readline()
+                if not line:
+                    break
+                print(f"    [Tunnel] {line.strip()}")
+                if "lhr.life" in line:
+                    match = re.search(r"https://[a-zA-Z0-9-]+\.lhr\.life", line)
+                    if match:
+                        tunnel_url = match.group(0)
+                        print(f"[+] Tunnel URL detected: {tunnel_url}")
+                        break
+
+            if tunnel_url:
+                with open("tunnel_url.txt", "w") as f:
+                    f.write(tunnel_url)
+                print("[*] Committing tunnel URL to GitHub...")
+                try:
+                    subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
+                    subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
+                    subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=15)
+                    print("[+] Tunnel URL pushed to GitHub!")
+                except Exception as e:
+                    print(f"[!] Git push failed: {e}")
+
+            # Drain stdout so process doesn't hang
+            def consume(stream):
+                try:
+                    for _ in stream:
+                        pass
+                except Exception:
+                    pass
+            threading.Thread(target=consume, args=(p.stdout,), daemon=True).start()
+            p.service_name = "Secure HTTPS Tunnel (localhost.run)"
+            processes.append(p)
+        except Exception as ex:
+            print(f"[!] Tunnel failed to start: {ex}. Continuing without tunnel.")
+
+    t = threading.Thread(target=_tunnel_worker, daemon=True)
     t.start()
-    
-    p.service_name = "Secure HTTPS Tunnel (localhost.run)"
-    processes.append(p)
-    return p
+    print("[*] Tunnel starting in background — services will launch immediately...")
 
 def main():
     print("=" * 80)
     print("                CLOUDSHIELD LOCAL MULTI-SERVICE RUNNER                 ")
     print("=" * 80)
     print("[*] Starting CloudShield services natively using Python...")
-    
+
     # 1. Install pip packages
     install_dependencies()
-    
-    # 2. Start SSH Tunnel and Push to GitHub
+
+    # 2. Start SSH Tunnel in background (non-blocking)
     establish_tunnel()
-    
+
     # 3. Define other service execution configurations
     services = [
         {
@@ -160,13 +159,13 @@ def main():
             "env": {}
         }
     ]
-    
+
     # 4. Spin up all components in background
     for s in services:
         print(f"[*] Launching {s['name']}...")
         run_service(s["cmd"], s["cwd"], s["env"], s["name"])
-        time.sleep(1) # wait briefly before starting next service
-        
+        time.sleep(1)  # wait briefly before starting next service
+
     print("\n" + "=" * 80)
     print("[+] All services launched successfully!")
     print("    - Legitimate App:   http://localhost:8080  (via Proxy)")
@@ -175,17 +174,16 @@ def main():
     print("    - Honeypot Decoy:   Internal (Port 9000)")
     print("=" * 80)
     print("\n[!] PRESS CTRL+C TO STOP ALL SERVICES CLEANLY.\n")
-    
+
     try:
-        # Keep main thread alive and print logs
+        # Keep main thread alive and monitor services
         while True:
             for p in processes:
-                # Non-blocking poll
                 if p.poll() is not None:
                     print(f"\n[!] Service '{p.service_name}' exited with code {p.returncode}. Stopping all...")
                     raise KeyboardInterrupt
             time.sleep(0.2)
-            
+
     except KeyboardInterrupt:
         print("\n[*] Terminating all processes...")
         for p in processes:

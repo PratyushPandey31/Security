@@ -1,185 +1,304 @@
-# 🛡️ CloudShield v4: Enterprise Cyber Defense, Active Deception & Security Audit Suite
+# 🛡️ CloudShield v4
+## Enterprise Cyber Defense, Active Deception & Security Audit Suite
 
-[![Security Status](https://img.shields.io/badge/Security-Active%20WAF-brightgreen.svg)](#)
-[![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)](#)
-[![Architecture](https://img.shields.io/badge/Architecture-Microservices-orange.svg)](#)
-[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20At--Rest%20Encrypted-purple.svg)](#)
-[![Deployment](https://img.shields.io/badge/Vercel-SOC%20Dashboard%20Live-blueviolet.svg)](#)
+[![Security](https://img.shields.io/badge/Security-Active%20WAF-brightgreen?style=for-the-badge&logo=shield&logoColor=white)](#)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](#)
+[![Flask](https://img.shields.io/badge/Flask-Microservices-000000?style=for-the-badge&logo=flask&logoColor=white)](#)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#)
 
-Welcome to **CloudShield v4**, a production-grade, zero-trust cloud security and cyber defense virtualization suite. Architected as a comprehensive Security Operations Center (SOC) simulation, CloudShield integrates active web application firewalls (WAF), live telemetry log streaming, cryptographic at-rest protection, network deception honeypots, and vulnerability penetration scanners into a unified microservices ecosystem.
-
-This edition features a **fully deployed public SOC Dashboard** integrated with browser-secure client-side authentication and secure HTTPS tunneling to connect cloud deployments back to your local microservice backend without security blocks.
-
----
-
-## 🌟 Platform Capabilities & Core Features
-
-### 1. SIEM SOC Dashboard Gateway
-*   **Security Gateway Protection**: The public SIEM dashboard is protected by a sleek, glassmorphic auth overlay. Telemetry endpoints and real-time feeds only initialize upon successful operator authentication.
-*   **Default Analyst Account**: Auto-registers a default analyst credential set upon first load.
-*   **Local Storage Analyst Vault**: Analysts can register new security operator cards directly. Credentials persist across browser reloads using secure local storage serialization.
-*   **Operator Session Control**: Supports secure logout triggers that wipe session tokens, lock the SOC visuals instantly, and stop backend feeds.
-
-### 2. Standalone Premium Authentication & Zero-Trust Portal
-*   **Modern Glassmorphic UI**: Independent, sleek `login.html` and `register.html` pages styled with frosted-glass containers, glowing borders, and linear gradient transitions.
-*   **Password Entropy Analyzer**: Real-time password complexity checker calculating bits of cryptographic information entropy.
-*   **Breached Credentials Audit**: Compares user input against standard dictionary files containing compromised databases to block weak password registrations.
-*   **Simulated MFA Generator**: Dynamic 6-digit Multi-Factor Authentication prompt matching standard verification workflows.
-
-### 3. At-Rest Cryptographic Shield (Secure Vault)
-*   **Stream Cipher Encryption**: Files uploaded to the portal vault are encrypted at-rest inside SQLite tables using a pure Python RC4-based cryptographic engine.
-*   **Session-Key Derivation**: Key combines server secret keys and user session credentials to ensure complete isolation.
-*   **Examiner Visualization Tool**: Users can toggle between the decrypted plaintext file and the raw base64-encoded encrypted database payload inside the UI console.
-
-### 4. Real-Time Telemetry Log Streamer & SSL Tunneling
-*   **Server-Sent Events (SSE)**: Live HTTP request console displaying network actions (PASS, BLOCK, DECEPTION), response codes, and WAF rules matched as they route.
-*   **HTTPS Tunnel Routing**: Integrated secure SSL tunnels (via `localhost.run`) to forward telemetry to public Vercel dashboards, bypassing modern browser **Mixed Content** security blocks.
-*   **Visual Threat Vector Tracing**: Dynamic SVG Map plotting threat vectors and drawing glowing attack path lines from geolocations when alerts trigger.
-
-### 5. Interactive 6+ Analytics Visualizations
-*   **Custom Chart.js Core**: Locally hosted charts that load without an internet connection, including:
-    *   *Attack Distribution Doughnut* (with total count center overlays).
-    *   *24-Hour Timeline Bar Chart* (featuring vertical linear gradients).
-    *   *Severity Risk Matrix* (horizontal layout).
-    *   *WAF Action Ratios* (PASS vs BLOCK vs DECEPTION).
-    *   *Alert Status Overview* and *HTTP Methods* breakdowns.
-
-### 6. Pentest Scanner & Executive PDF Report
-*   **Multi-Stage Audit Scanner**: Evaluates target URLs for exposed directory indexes (`/admin`), missing security headers (HSTS, CSP, XFO, nosniff), and SQL Injection auth bypasses.
-*   **Executive Scorecard**: Automatically generates vulnerability lists and download links for CSV audit logs.
-*   **rem-CSS rules**: Print-optimized stylesheets to save scorecards directly as executive PDFs.
-
-### 7. Active Deception Honeypot Sandbox
-*   **Transparent Redirection**: Redirects brute force directory index probes (like `/admin` or `/wp-admin`) to an isolated decoy terminal sandbox container without throwing error states.
-*   **Intrusion Mitigation**: Tracks terminal command executions in the sandbox, automatically triggers firewall-layer bans on the attacker's IP, and generates high-priority alerts.
+> **Built by Pratyush Pandey** — A production-grade, zero-trust cloud security virtualization suite featuring real-time SIEM telemetry, active WAF firewalling, cryptographic vault, network deception honeypots, and AI-assisted vulnerability scanning.
 
 ---
 
-## 📐 Microservices Architecture Map
+## 🌐 Live Deployment
+
+| Resource | Link |
+|---|---|
+| 🚀 **Public SOC Dashboard** | **[pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app)** |
+| 📦 **GitHub Repository** | [PratyushPandey31/Security](https://github.com/PratyushPandey31/Security) |
+
+---
+
+## 📸 Dashboard Screenshots
+
+### 🔐 Security Gateway Login
+Premium glassmorphic login interface with rotating holographic lock animation and zero-trust authentication.
+
+### 🖥️ SOC Command Center
+Real-time threat map with Bezier attack vector tracing, live alert feeds, and animated metric counters.
+
+### 📊 Analytics Intelligence Hub
+6 interactive Chart.js visualizations including smooth area charts, severity matrices, and WAF action ratios.
+
+---
+
+## ✨ Platform Capabilities
+
+### 🛡️ 1. SIEM SOC Dashboard (Deployed)
+- **Zero-Trust Auth Gateway** — Glassmorphic login with rotating SVG padlock, local storage session management
+- **Live Threat Map** — SVG world map with dynamic Bezier curved attack path animations per alert
+- **Real-Time Alert Feed** — SSE-powered streaming alerts with severity color coding and source IP tracking
+- **Stat Counters** — Animated rolling counters for threats, critical events, honeypot triggers, IP bans
+
+### 📊 2. Analytics Intelligence Suite
+- **Attack Distribution Doughnut** — Breakdown of attack types with percentage tooltips
+- **24-Hour Threat Timeline** — Smooth glowing area chart (cyan→purple gradient)
+- **Severity Risk Matrix** — Horizontal gradient bars (CRITICAL→INFO)
+- **WAF Action Ratios** — PASS / BLOCK / DECEPTION breakdown
+- **Alert Status Overview** — BLOCKED vs LOGGED
+- **HTTP Methods Chart** — GET / POST / PUT distribution
+
+### 🔒 3. Cryptographic File Vault
+- **RC4 Stream Cipher** — At-rest encryption inside SQLite database
+- **Session-Key Derivation** — Keys derived from server secret + user credentials
+- **Base64 Payload Viewer** — Toggle between plaintext and encrypted storage view
+
+### ⚡ 4. Autonomous Vulnerability Auditor
+- **Conic Radar Sweep UI** — Real-time scanning animation during audit
+- **Directory Probe** — Tests for exposed `/admin`, `/backup`, `/config` paths
+- **HTTP Security Headers** — Checks HSTS, CSP, X-Frame-Options, nosniff
+- **SQL Injection Bypass** — Tests authentication bypass patterns
+- **Security Scorecard** — A–F grade with executive PDF export + CSV download
+
+### 🍯 5. Active Deception Honeypot
+- **Transparent Redirect** — `/admin`, `/wp-admin` probes silently routed to decoy terminal
+- **Command Capture** — All executed commands logged with attacker IP
+- **Auto IP Ban** — Honeypot triggers automatic firewall-layer block + SIEM alert
+- **Unban from Dashboard** — One-click IP unban from SOC banned IPs table
+
+### 🔌 6. Real-Time Telemetry Streaming
+- **Server-Sent Events (SSE)** — Live HTTP pipeline showing every request action
+- **HTTPS Tunnel** — `localhost.run` SSH tunnel auto-started in background thread
+- **Tunnel URL Auto-Push** — Tunnel URL committed and pushed to GitHub automatically
+- **Mixed-Content Safe** — HTTPS forwarding prevents browser security blocks on Vercel
+
+---
+
+## 🏗️ Microservices Architecture
 
 ```mermaid
 graph TD
-    %% Nodes
     Attacker[💻 Attacker / Client]
-    WAF[🛡️ Proxy WAF Gateway <br> Port 8080]
-    WebApp[📦 Legitimate Web App <br> Port 8000]
-    Honeypot[🍯 Decoy Honeypot <br> Port 9000]
-    Backend[💾 Security API Backend <br> Port 5000]
-    Tunnel[🔌 Secure Tunnel <br> localhost.run]
-    Vercel[📊 Public SIEM Dashboard <br> Vercel Deployment]
+    WAF[🛡️ WAF Proxy Gateway<br/>Port 8080]
+    WebApp[📦 Web Application<br/>Port 8000]
+    Honeypot[🍯 Decoy Honeypot<br/>Port 9000]
+    Backend[💾 Security API<br/>Port 5000]
+    Tunnel[🔌 SSH Tunnel<br/>localhost.run]
+    Vercel[📊 SIEM Dashboard<br/>Vercel]
 
-    %% Styles
-    classDef red fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fecaca;
-    classDef green fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5;
-    classDef blue fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
-    classDef orange fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#ffedd5;
-    
-    class Attacker,Honeypot red;
-    class WAF,Backend blue;
-    class WebApp green;
-    class Tunnel,Vercel orange;
+    classDef red fill:#7f1d1d,stroke:#ef4444,color:#fecaca
+    classDef blue fill:#1e3a8a,stroke:#3b82f6,color:#dbeafe
+    classDef green fill:#064e3b,stroke:#10b981,color:#d1fae5
+    classDef orange fill:#7c2d12,stroke:#f97316,color:#ffedd5
 
-    %% Flows
-    Attacker -->|HTTP Requests| WAF
-    WAF -->|Normal Path| WebApp
-    WAF -->|Admin Path Probe / Exploit| Honeypot
-    
-    WebApp -->|Log Alerts / Traffic| Backend
-    Honeypot -->|Mitigate Command & Ban IP| Backend
-    WAF -->|Block Events| Backend
-    
-    Backend -->|Local Link| Tunnel
-    Tunnel -->|HTTPS Forwarding| Vercel
+    class Attacker,Honeypot red
+    class WAF,Backend blue
+    class WebApp green
+    class Tunnel,Vercel orange
+
+    Attacker -->|HTTP Request| WAF
+    WAF -->|Legit Path| WebApp
+    WAF -->|Admin Probe| Honeypot
+    WAF -->|Block Event| Backend
+    WebApp --> Backend
+    Honeypot -->|IP Ban + Alert| Backend
+    Backend --> Tunnel
+    Tunnel --> Vercel
 ```
 
 ---
 
-## 🔌 Microservices Port Configuration
+## 🔌 Port Configuration
 
-| Service Name | Port | Access URL | Technology Stack |
-| :--- | :--- | :--- | :--- |
-| **Proxy WAF Gateway** | `8080` | `http://localhost:8080` | Python, Flask, RegEx Rules |
-| **Legitimate Web App** | `8000` | `http://localhost:8000` | Python, Flask, Jinja2, SQLite |
-| **Deception Honeypot** | `9000` | `http://localhost:9000` | Python, Flask, Mock Terminal |
-| **Security Backend API** | `5000` | `http://localhost:5000` | Python, Flask, SQLite, SSE |
-| **SIEM Dashboard Server** | `8081` | `http://localhost:8081` | HTML5, Vanilla CSS, Chart.js, SVG |
-
-*   **Public Deployed SIEM SOC Dashboard:** [https://pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app)
+| Service | Port | URL | Stack |
+|---|---|---|---|
+| **WAF Proxy Gateway** | `8080` | http://localhost:8080 | Python, Flask, RegEx |
+| **Web Application** | `8000` | http://localhost:8000 | Python, Flask, SQLite |
+| **Honeypot Decoy** | `9000` | http://localhost:9000 | Python, Flask |
+| **Security API Backend** | `5000` | http://localhost:5000 | Python, Flask, SSE |
+| **SIEM Dashboard** | `8081` | http://localhost:8081 | HTML5, CSS3, Chart.js |
 
 ---
 
-## 🚀 Step-by-Step Setup Guide
+## 🚀 Quick Start
 
-### 📦 Option A: Native Startup (Recommended)
-CloudShield contains a refactored non-blocking multi-service runner (`run_locally.py`) that handles dependency installations automatically and boots all microservices concurrently without pipe-deadlocks.
+### Option A — Native Python (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/PratyushPandey31/Security.git
+cd Security
 
-1. Open a PowerShell/Terminal window in the project root directory and run:
-   ```bash
-   python run_locally.py
-   ```
-2. Keep the console window open during the demonstration. Press `Ctrl+C` to stop all services cleanly.
+# Start all services (installs deps automatically)
+python run_locally.py
+```
 
-### 🐳 Option B: Docker Compose Container Cluster
-If Docker Desktop is running on your host:
-1. Build and launch the container nodes:
-   ```bash
-   docker compose up --build -d
-   ```
-2. Check container status:
-   ```bash
-   docker ps
-   ```
-3. Stop the container swarm:
-   ```bash
-   docker compose down
-   ```
+> ✅ All 5 services start concurrently. SSH tunnel launches in background — no blocking!
+
+### Option B — Docker Compose
+```bash
+docker compose up --build -d
+docker ps                    # Check status
+docker compose down          # Stop all
+```
+
+### Default Login Credentials
+| Field | Value |
+|---|---|
+| **Operator ID** | `admin` |
+| **Security Keyphrase** | `admin123` |
 
 ---
 
-## 💻 Live Project Demonstration Walkthrough
+## 🔬 Live Demo Walkthrough
 
-Perform the following sequences to showcase the zero-trust active defense mechanics:
+### 1. Auth Gateway & Session Control
+1. Visit **[http://localhost:8081](http://localhost:8081)**
+2. Login with default credentials
+3. Dashboard connects to backend via `http://localhost:5000`
 
-### 1. SIEM SOC Dashboard Gateway & Telemetry Connection
-1. Open the public deployed dashboard: [https://pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app).
-2. Authenticate using the default Operator ID and Security Keyphrase initialized in the portal database.
-3. If the local microservices are running (via Option A/B), the dashboard will connect instantly to your active telemetry server over the secure HTTPS tunnel.
+### 2. SQL Injection WAF Interception
+```
+URL: http://localhost:8080/login
+Username: admin' OR '1'='1
+Password: anything
+→ RESULT: WAF blocks request, SIEM alert fires, map plots attack vector
+```
 
-### 2. Zero-Trust Portal Setup & Password Strength Audit
-1. Open the website portal: [http://localhost:8080](http://localhost:8080).
-2. Click **Register Secure Account** to access the premium `register.html` page.
-3. In the password field, type a weak password (e.g. `12345`). Note the indicator bar turns red and reads **Weak**.
-4. Type a strong credentials string (e.g. `SafeAdmin!99`). The meter updates to green (**Excellent**). Complete the registration.
+### 3. Honeypot Admin Probe
+```
+URL: http://localhost:8080/admin
+→ RESULT: Silently redirected to decoy terminal
+→ Type: cat /etc/shadow  →  Auto IP Ban triggered!
+```
 
-### 3. Multi-Factor Authentication & Cryptographic Vault
-1. Go to the login page: [http://localhost:8080/login](http://localhost:8080/login).
-2. Enter your credentials. Click **Verify Identity**.
-3. You are redirected to the **MFA Verification** screen. Copy the simulated authentication code, paste it, and verify to login.
-4. Select **Secure File Vault** in the dashboard sidebar.
-5. Create a file note (e.g. `keys.txt` with content `token_secret_99`).
-6. Click **View raw database payload** under the file. This shows examiners the base64-encoded encrypted text stored in the SQLite database to prove **at-rest database encryption**.
+### 4. Vulnerability Audit
+```
+SIEM Dashboard → Vulnerability Auditor tab
+Target: http://localhost:8080
+→ Conic radar sweep animation starts
+→ Report generated with security grade A-F
+→ CSV auto-downloaded
+```
 
-### 4. Active WAF Interception & Real-Time Alert Logging
-1. Open the **SIEM Dashboard** on [https://pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app) and go to the **Traffic Inspector** tab.
-2. In another tab, log out of the portal and go to [http://localhost:8080/login](http://localhost:8080/login).
-3. Try a SQL Injection authentication bypass payload:
-   * **Username**: `admin' OR '1'='1`
-   * **Password**: `any`
-4. Click **Verify Identity**.
-5. **Result**: The request is instantly blocked by the Proxy WAF Gateway, displaying a red **Access Blocked** alert page.
-6. Check the **SIEM Dashboard**. The real-time alert feed shows a new High-Severity SQLi threat, the geolocations map draws a glowing attack vector, and the Traffic Inspector console lists the blocked log live.
+### 5. File Vault Encryption Demo
+```
+Portal → Secure Vault → Create file "keys.txt"
+→ Toggle "View raw database payload"
+→ See base64 encrypted ciphertext in SQLite
+```
 
-### 5. Decoy Redirect & Automated IP Ban
-1. Probing decoy: Enter [http://localhost:8080/admin](http://localhost:8080/admin) in the browser.
-2. The proxy gateway transparently routes you to the isolated **Mock Honeypot Sandbox**.
-3. Inside the terminal prompt, type an exploit command (e.g., `cat /etc/shadow` or `whoami`) and hit Enter.
-4. **Result**: The honeypot logs the command execution, alerts the backend, and triggers an **automated firewall ban** on your IP.
-5. Try loading the clean homepage [http://localhost:8080/](http://localhost:8080/). You are blocked from the network!
-6. Click **Unban IP** in the SIEM dashboard's blocklist table to recover access.
+---
 
-### 6. Vulnerability Scan & PDF Audit Report Generation
-1. On the SIEM Dashboard, navigate to the **Vulnerability Auditor** tab.
-2. Target `http://localhost:8080` and click **Start Scan**.
-3. Once completed, review the security scorecard showing missing headers and SQLi bypass vulnerabilities.
-4. Click **Print** to save the scorecard as a formatted executive PDF.
-5. Check your downloads directory for the auto-downloaded `audit_report.csv` file containing the complete transaction log.
+## 🛠️ API Reference
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/stats` | GET | Total alerts, critical count, bans, honeypot triggers |
+| `/api/alerts` | GET | Paginated alert log with severity and attack type |
+| `/api/traffic` | GET/POST | WAF traffic log — PASS/BLOCK/DECEPTION |
+| `/api/events` | GET (SSE) | Real-time event stream for live dashboard |
+| `/api/banned-ips` | GET | Active IP ban list |
+| `/api/banned-ips/unban` | POST | Remove an IP from blocklist |
+| `/api/waf-rules` | GET/POST | List and update WAF firewall rules |
+| `/api/scanner/audit` | POST | Run vulnerability audit against target URL |
+| `/api/reports/csv` | GET | Download full audit log as CSV |
+
+---
+
+## 📁 Project Structure
+
+```
+Security/
+├── proxy_waf/          # WAF Proxy Gateway (Port 8080)
+│   └── waf_proxy.py
+├── web_app/            # Legitimate Web App (Port 8000)
+│   ├── app.py
+│   └── templates/
+├── honeypot_decoy/     # Decoy Honeypot (Port 9000)
+│   └── decoy.py
+├── security_backend/   # Security API (Port 5000)
+│   ├── backend.py
+│   └── database.py
+├── security_dashboard/ # SIEM Frontend (Port 8081)
+│   └── index.html
+├── run_locally.py      # Multi-service launcher
+├── docker-compose.yml  # Container orchestration
+├── seed_data.py        # Test data seeder
+└── README.md
+```
+
+---
+
+## 🔐 Security Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   ZERO-TRUST PERIMETER               │
+│                                                       │
+│  [Client] ──► [WAF Proxy :8080]                      │
+│                    │                                  │
+│         ┌──────────┴──────────┐                      │
+│         │                     │                      │
+│    [PASS/LOG]           [BLOCK/HONEYPOT]              │
+│         │                     │                      │
+│    [Web App :8000]    [Decoy :9000]                   │
+│         │                     │                      │
+│         └──────────┬──────────┘                      │
+│                    │                                  │
+│           [Security API :5000]                        │
+│           ├── SQLite DB (encrypted)                   │
+│           ├── SSE Event Stream                        │
+│           └── SSH Tunnel → Vercel SOC                 │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Test backend API
+python test_backend.py
+
+# Test WAF rules
+python test_rules.py
+
+# Test admin login bypass detection
+python test_admin_login.py
+
+# Seed demo data
+python seed_data.py
+
+# Reset database
+python reset_db.py
+
+# Unban your own IP (if accidentally banned)
+python unban_self.py
+```
+
+---
+
+## 📦 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Python 3.8+, Flask, Flask-CORS |
+| **Database** | SQLite (RC4 encrypted at-rest) |
+| **Frontend** | Vanilla HTML5, CSS3 (Glassmorphism), Chart.js |
+| **Fonts** | Outfit (UI), JetBrains Mono (terminal) |
+| **Deployment** | Vercel (frontend), localhost.run (HTTPS tunnel) |
+| **Container** | Docker, Docker Compose |
+| **Security** | RC4 cipher, session-key derivation, WAF regex rules |
+
+---
+
+## 👨‍💻 Author
+
+**Pratyush Pandey**
+- 🌐 [GitHub](https://github.com/PratyushPandey31)
+- 🚀 [Live Project](https://pratyush-cloudshield-siem.vercel.app)
+
+---
+
+*CloudShield v4 — Built with ❤️ for cybersecurity education and demonstration*
