@@ -503,72 +503,96 @@
 <div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: 99999; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; transition: opacity 0.5s ease, visibility 0.5s ease; opacity: 1; visibility: visible;">
     <style>
         .auth-card {
-            background: rgba(13, 21, 38, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            border-radius: 16px;
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 20px;
             width: 100%;
-            max-width: 400px;
-            padding: 2.5rem;
+            max-width: 420px;
+            padding: 2.8rem 2.2rem;
             box-sizing: border-box;
             text-align: center;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s;
         }
         .auth-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 60%);
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
             pointer-events: none;
         }
         .auth-logo {
             font-size: 1.8rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: 2px;
             color: #fff;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
         }
         .auth-logo span {
-            background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+            background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .auth-subtitle {
-            color: #64748b;
-            font-size: 0.82rem;
-            margin-bottom: 1.75rem;
-            letter-spacing: 0.5px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 700;
         }
+        
+        /* ── Shield Rotation Animation ── */
+        @keyframes rotate-ring {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .auth-shield-ring {
+            transform-origin: 50px 50px;
+            animation: rotate-ring 12s linear infinite;
+        }
+        .auth-lock-shackle {
+            animation: pulse-shackle 2s infinite alternate;
+        }
+        @keyframes pulse-shackle {
+            0% { opacity: 0.75; }
+            100% { opacity: 1; filter: drop-shadow(0 0 4px var(--blue)); }
+        }
+
         .auth-tabs {
             display: flex;
-            background: rgba(2, 6, 23, 0.5);
-            border-radius: 8px;
+            background: rgba(2, 6, 23, 0.7);
+            border-radius: 10px;
             padding: 0.25rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
         .auth-tab {
             flex: 1;
-            padding: 0.5rem;
+            padding: 0.6rem;
             color: #64748b;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border-radius: 8px;
             border: none;
             background: transparent;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
         .auth-tab.active {
-            background: rgba(168, 85, 247, 0.2);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(139, 92, 246, 0.25));
             color: #fff;
-            border: 1px solid rgba(168, 85, 247, 0.35);
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
         .auth-form-group {
             text-align: left;
@@ -577,18 +601,18 @@
         .auth-form-group label {
             display: block;
             font-size: 0.72rem;
-            color: #94a3b8;
+            color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 0.5rem;
-            font-weight: 600;
+            font-weight: 700;
         }
         .auth-input {
             width: 100%;
-            background: rgba(2, 6, 23, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 0.7rem 0.9rem;
+            padding: 0.75rem 1rem;
             color: #fff;
             font-family: inherit;
             font-size: 0.88rem;
@@ -597,28 +621,31 @@
             box-sizing: border-box;
         }
         .auth-input:focus {
-            border-color: #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
-            background: rgba(2, 6, 23, 0.6);
+            border-color: var(--blue);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            background: rgba(2, 6, 23, 0.8);
         }
         .auth-btn {
             width: 100%;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
             border: none;
             border-radius: 8px;
             color: #fff;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 0.5rem;
-            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
-            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0.75rem;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .auth-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.55);
+            border-color: rgba(6, 182, 212, 0.4);
         }
         .auth-btn:active {
             transform: translateY(0);
@@ -627,9 +654,9 @@
             background: rgba(239, 68, 68, 0.15);
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: #f87171;
-            padding: 0.7rem;
+            padding: 0.75rem;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             margin-bottom: 1.25rem;
             text-align: left;
             display: none;
@@ -642,6 +669,28 @@
         }
     </style>
     <div class="auth-card">
+        <!-- Holographic Shield Logo -->
+        <div class="auth-shield-container" style="display:flex; justify-content:center; margin-bottom:1.25rem;">
+            <svg width="64" height="64" viewBox="0 0 100 100" class="auth-shield-svg">
+                <defs>
+                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="var(--blue)"/>
+                        <stop offset="100%" stop-color="var(--purple)"/>
+                    </linearGradient>
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="url(#shieldGrad)" stroke-width="1.5" stroke-dasharray="10 15 20 15" class="auth-shield-ring"/>
+                <g filter="url(#glow)">
+                    <path d="M 50 26 A 11 11 0 0 1 61 37 L 61 46 L 39 46 L 39 37 A 11 11 0 0 1 50 26 Z" fill="none" stroke="var(--blue)" stroke-width="2.5" class="auth-lock-shackle"/>
+                    <rect x="33" y="42" width="34" height="26" rx="5" fill="url(#shieldGrad)" class="auth-lock-body"/>
+                    <circle cx="50" cy="55" r="3.5" fill="#030712"/>
+                    <path d="M 50 58.5 L 50 63" stroke="#030712" stroke-width="2.5"/>
+                </g>
+            </svg>
+        </div>
         <div class="auth-logo">🛡️ Cloud<span>Shield</span></div>
         <div id="auth-card-title" style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:0.25rem;">Security Gateway</div>
         <div class="auth-subtitle">IDENTIFICATION REQUIRED FOR ACCESS</div>
@@ -1617,24 +1666,30 @@ function destroyChart(id) { if (_ch[id]) { _ch[id].destroy(); delete _ch[id]; } 
 
 const LEGEND = {
     labels: {
-        color: '#8e9bae',
-        font: { family: 'Outfit', size: 11 },
-        padding: 16,
+        color: '#9ca3af',
+        font: { family: 'Outfit', size: 10.5, weight: '600' },
+        padding: 18,
         usePointStyle: true,
         pointStyle: 'circle'
     }
 };
-const GRID  = { color: 'rgba(30,48,88,0.45)', drawBorder: false };
-const TICKS = { color: '#7a8ba8', font: { family: 'Outfit', size: 10 } };
+const GRID  = { color: 'rgba(55, 65, 81, 0.2)', drawBorder: false };
+const TICKS = { color: '#9ca3af', font: { family: 'Outfit', size: 10 } };
 
 const TOOLTIP = {
-    backgroundColor: 'rgba(13,21,38,0.96)',
-    borderColor: 'rgba(0,212,255,0.25)',
-    borderWidth: 1,
-    titleColor: '#e8edf5',
-    bodyColor: '#8e9bae',
-    padding: 10,
-    cornerRadius: 8
+    backgroundColor: 'rgba(10, 15, 30, 0.95)',
+    borderColor: 'rgba(6, 182, 212, 0.35)',
+    borderWidth: 1.5,
+    titleColor: '#ffffff',
+    bodyColor: '#9ca3af',
+    titleFont: { family: 'Outfit', weight: '700', size: 12 },
+    bodyFont: { family: 'Outfit', size: 11 },
+    padding: 12,
+    cornerRadius: 8,
+    displayColors: true,
+    boxWidth: 8,
+    boxHeight: 8,
+    boxPadding: 6
 };
 
 function renderCharts() {
@@ -1664,7 +1719,7 @@ function renderCharts() {
         alerts.forEach(a => aCounts[a.attack_type] = (aCounts[a.attack_type]||0)+1);
         const aLabels = Object.keys(aCounts).map(l => l.length > 20 ? l.slice(0,18)+'…' : l);
         const aData   = Object.values(aCounts);
-        const aColors = ['#00d4ff','#ff2d5b','#00ff88','#ff6b00','#a855f7','#f59e0b','#ec4899','#14b8a6','#6366f1','#84cc16'];
+        const aColors = ['rgba(6, 182, 212, 0.85)','rgba(239, 68, 68, 0.85)','rgba(16, 185, 129, 0.85)','rgba(249, 115, 22, 0.85)','rgba(139, 92, 246, 0.85)','rgba(245, 158, 11, 0.85)','rgba(236, 72, 153, 0.85)','rgba(20, 184, 166, 0.85)'];
         destroyChart('chart-attack');
         _ch['chart-attack'] = new Chart(document.getElementById('chart-attack'), {
             type: 'doughnut',
@@ -1673,7 +1728,7 @@ function renderCharts() {
                 datasets: [{
                     data: aData,
                     backgroundColor: aColors.slice(0, aData.length),
-                    borderColor: '#0d1526',
+                    borderColor: '#030712',
                     borderWidth: 2,
                     hoverOffset: 12,
                     hoverBorderColor: '#ffffff33'
@@ -1683,7 +1738,7 @@ function renderCharts() {
                 cutout: '72%',
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { animateScale: true, animateRotate: true, duration: 1100 },
+                animation: { animateScale: true, animateRotate: true, duration: 1100, easing: 'easeOutQuart' },
                 plugins: {
                     legend: LEGEND,
                     tooltip: { ...TOOLTIP, callbacks: { label: c => `  ${c.label}: ${c.raw} events (${((c.raw/aData.reduce((a,b)=>a+b,0))*100).toFixed(1)}%)` } }
@@ -1691,47 +1746,47 @@ function renderCharts() {
             }
         });
 
-        // ── 2. 24-Hour Threat Timeline (With Vertical Gradient) ───────────
+        // ── 2. 24-Hour Threat Timeline (Smooth Glowing Line Area Chart) ───
         const buckets = {};
         for (let h = 0; h < 24; h++) buckets[h] = 0;
         alerts.forEach(a => { const h = new Date(a.timestamp).getHours(); if (h in buckets) buckets[h]++; });
         const tLabels = Object.keys(buckets).map(h => h.toString().padStart(2,'0') + ':00');
         const tData   = Object.values(buckets);
-        const maxT    = Math.max(...tData, 1);
 
         const canvasTimeline = document.getElementById('chart-timeline');
         const ctxTimeline = canvasTimeline.getContext('2d');
-        const gradOrange = ctxTimeline.createLinearGradient(0, 0, 0, 240);
-        gradOrange.addColorStop(0, 'rgba(255, 107, 0, 0.85)');
-        gradOrange.addColorStop(1, 'rgba(255, 107, 0, 0.05)');
-
-        const gradRed = ctxTimeline.createLinearGradient(0, 0, 0, 240);
-        gradRed.addColorStop(0, 'rgba(255, 45, 91, 0.85)');
-        gradRed.addColorStop(1, 'rgba(255, 45, 91, 0.05)');
-
-        const gradBlue = ctxTimeline.createLinearGradient(0, 0, 0, 240);
-        gradBlue.addColorStop(0, 'rgba(0, 212, 255, 0.75)');
-        gradBlue.addColorStop(1, 'rgba(0, 212, 255, 0.05)');
+        const gradLine = ctxTimeline.createLinearGradient(0, 0, 0, 240);
+        gradLine.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
+        gradLine.addColorStop(0.5, 'rgba(139, 92, 246, 0.15)');
+        gradLine.addColorStop(1, 'rgba(3, 7, 18, 0)');
 
         destroyChart('chart-timeline');
         _ch['chart-timeline'] = new Chart(canvasTimeline, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: tLabels,
                 datasets: [{
                     label: 'Attacks',
                     data: tData,
-                    backgroundColor: tData.map(v => v >= maxT * 0.6 ? gradRed : v >= maxT * 0.3 ? gradOrange : gradBlue),
-                    borderColor:     tData.map(v => v >= maxT * 0.6 ? '#ff2d5b' : v >= maxT * 0.3 ? '#ff6b00' : '#00d4ff'),
-                    borderWidth: 1.5,
-                    borderRadius: 6,
-                    borderSkipped: false
+                    fill: true,
+                    backgroundColor: gradLine,
+                    borderColor: '#06b6d4',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#030712',
+                    pointBorderColor: '#06b6d4',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: '#06b6d4',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2.5,
+                    tension: 0.45
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 950 },
+                animation: { duration: 1200, easing: 'easeOutQuart' },
                 plugins: {
                     legend: { display: false },
                     tooltip: { ...TOOLTIP, callbacks: { title: ([c]) => `Hour: ${c.label}`, label: c => `  ${c.raw} attack${c.raw !== 1 ? 's' : ''}` } }
@@ -1751,26 +1806,25 @@ function renderCharts() {
         const canvasSeverity = document.getElementById('chart-severity');
         const ctxSeverity = canvasSeverity.getContext('2d');
         
-        // Horizontal gradients for each severity level
         const gradCrit = ctxSeverity.createLinearGradient(0, 0, 300, 0);
-        gradCrit.addColorStop(0, 'rgba(255, 45, 91, 0.9)');
-        gradCrit.addColorStop(1, 'rgba(255, 45, 91, 0.15)');
+        gradCrit.addColorStop(0, 'rgba(239, 68, 68, 0.9)');
+        gradCrit.addColorStop(1, 'rgba(239, 68, 68, 0.15)');
 
         const gradHigh = ctxSeverity.createLinearGradient(0, 0, 300, 0);
-        gradHigh.addColorStop(0, 'rgba(255, 107, 0, 0.9)');
-        gradHigh.addColorStop(1, 'rgba(255, 107, 0, 0.15)');
+        gradHigh.addColorStop(0, 'rgba(249, 115, 22, 0.9)');
+        gradHigh.addColorStop(1, 'rgba(249, 115, 22, 0.15)');
 
         const gradMed = ctxSeverity.createLinearGradient(0, 0, 300, 0);
         gradMed.addColorStop(0, 'rgba(245, 158, 11, 0.85)');
         gradMed.addColorStop(1, 'rgba(245, 158, 11, 0.15)');
 
         const gradLow = ctxSeverity.createLinearGradient(0, 0, 300, 0);
-        gradLow.addColorStop(0, 'rgba(0, 255, 136, 0.8)');
-        gradLow.addColorStop(1, 'rgba(0, 255, 136, 0.12)');
+        gradLow.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+        gradLow.addColorStop(1, 'rgba(16, 185, 129, 0.12)');
 
         const gradInfo = ctxSeverity.createLinearGradient(0, 0, 300, 0);
-        gradInfo.addColorStop(0, 'rgba(0, 212, 255, 0.75)');
-        gradInfo.addColorStop(1, 'rgba(0, 212, 255, 0.12)');
+        gradInfo.addColorStop(0, 'rgba(6, 182, 212, 0.75)');
+        gradInfo.addColorStop(1, 'rgba(6, 182, 212, 0.12)');
 
         const sevGradients = [gradCrit, gradHigh, gradMed, gradLow, gradInfo];
 
@@ -1782,9 +1836,9 @@ function renderCharts() {
                 datasets: [{
                     data: sevs.map(s => sevC[s]),
                     backgroundColor: sevGradients,
-                    borderColor: ['#ff2d5b','#ff6b00','#f59e0b','#00ff88','#00d4ff'],
-                    borderWidth: 1,
-                    borderRadius: 5,
+                    borderColor: ['#ef4444','#f97316','#f59e0b','#10b981','#06b6d4'],
+                    borderWidth: 1.5,
+                    borderRadius: 6,
                     borderSkipped: false
                 }]
             },
@@ -1792,14 +1846,14 @@ function renderCharts() {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 1000 },
+                animation: { duration: 1100, easing: 'easeOutQuart' },
                 plugins: {
                     legend: { display: false },
                     tooltip: { ...TOOLTIP, callbacks: { label: c => `  ${c.raw} alerts` } }
                 },
                 scales: {
                     x: { ticks: TICKS, grid: GRID, beginAtZero: true, precision: 0 },
-                    y: { ticks: { color: '#e8edf5', font: { family: 'Outfit', size: 11, weight: '700' } }, grid: GRID }
+                    y: { ticks: { color: '#f3f4f6', font: { family: 'Outfit', size: 11, weight: '700' } }, grid: GRID }
                 }
             }
         });
@@ -1819,7 +1873,7 @@ function renderCharts() {
                 <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--red);font-size:.82rem">${ip}</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:8px">
-                        <div style="flex:1;height:6px;background:rgba(30,48,88,.6);border-radius:3px;overflow:hidden">
+                        <div style="flex:1;height:6px;background:rgba(55,65,81,.3);border-radius:3px;overflow:hidden">
                             <div style="height:100%;width:${Math.round(count/maxHits*100)}%;background:${sCols[ipS[ip]]||'#888'};border-radius:3px;transition:width .8s ease"></div>
                         </div>
                         <span style="font-weight:700;font-size:.82rem;min-width:24px;text-align:right">${count}</span>
@@ -1835,18 +1889,18 @@ function renderCharts() {
         _ch['chart-waf'] = new Chart(document.getElementById('chart-waf'), {
             type: 'doughnut',
             data: {
-                labels: ['✅ PASS','🚫 BLOCK','🍯 DECEPTION'],
+                labels: ['✅ PASS','🚫 BLOCK','🍯 DECEPT'],
                 datasets: [{
                     data: [wC.PASS, wC.BLOCK, wC.DECEPTION],
-                    backgroundColor: ['rgba(0,255,136,.75)','rgba(255,45,91,.85)','rgba(255,107,0,.85)'],
-                    borderColor: '#0d1526', borderWidth: 2, hoverOffset: 10
+                    backgroundColor: ['rgba(16,185,129,.75)','rgba(239,68,68,.85)','rgba(249,115,22,.85)'],
+                    borderColor: '#030712', borderWidth: 2, hoverOffset: 12
                 }]
             },
             options: {
                 cutout: '72%',
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { animateScale: true, duration: 950 },
+                animation: { animateScale: true, duration: 1000, easing: 'easeOutQuart' },
                 plugins: { legend: LEGEND, tooltip: { ...TOOLTIP, callbacks: { label: c => `  ${c.label}: ${c.raw} requests` } } }
             }
         });
@@ -1861,15 +1915,15 @@ function renderCharts() {
                 labels: ['🚫 BLOCKED','📝 LOGGED'],
                 datasets: [{
                     data: [stC.BLOCKED, stC.LOGGED],
-                    backgroundColor: ['rgba(255,45,91,.85)','rgba(0,212,255,.65)'],
-                    borderColor: '#0d1526', borderWidth: 2, hoverOffset: 10
+                    backgroundColor: ['rgba(239,68,68,.85)','rgba(6,182,212,.65)'],
+                    borderColor: '#030712', borderWidth: 2, hoverOffset: 12
                 }]
             },
             options: {
                 cutout: '72%',
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { animateScale: true, duration: 950 },
+                animation: { animateScale: true, duration: 1000, easing: 'easeOutQuart' },
                 plugins: { legend: LEGEND, tooltip: { ...TOOLTIP, callbacks: { label: c => `  ${c.label}: ${c.raw} alerts` } } }
             }
         });
@@ -1878,7 +1932,7 @@ function renderCharts() {
         const mC = {};
         alerts.forEach(a => mC[a.request_method] = (mC[a.request_method]||0)+1);
         const mLabels = Object.keys(mC), mData = Object.values(mC);
-        const mColors = ['rgba(168,85,247,.85)','rgba(0,212,255,.75)','rgba(245,158,11,.8)','rgba(0,255,136,.7)'];
+        const mColors = ['rgba(139,92,246,.85)','rgba(6,182,212,.75)','rgba(245,158,11,.8)','rgba(16,185,129,.7)'];
         destroyChart('chart-methods');
         _ch['chart-methods'] = new Chart(document.getElementById('chart-methods'), {
             type: 'doughnut',
@@ -1887,14 +1941,14 @@ function renderCharts() {
                 datasets: [{
                     data: mData,
                     backgroundColor: mColors.slice(0, mData.length),
-                    borderColor: '#0d1526', borderWidth: 2, hoverOffset: 10
+                    borderColor: '#030712', borderWidth: 2, hoverOffset: 12
                 }]
             },
             options: {
                 cutout: '72%',
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { animateScale: true, duration: 950 },
+                animation: { animateScale: true, duration: 1000, easing: 'easeOutQuart' },
                 plugins: { legend: LEGEND, tooltip: { ...TOOLTIP, callbacks: { label: c => `  ${c.label}: ${c.raw} requests` } } }
             }
         });
