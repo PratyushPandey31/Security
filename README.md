@@ -11,11 +11,12 @@
 
 ---
 
-## 🌐 Live Deployment
+## 🌐 Live Deployment & Assets
 
-| Resource | Link |
+| Resource | Link / Path |
 |---|---|
-| 🚀 **Public SOC Dashboard** | **[pratyush-cloudshield-siem.vercel.app](https://pratyush-cloudshield-siem.vercel.app)** |
+| 🚀 **Public SOC Dashboard** | **[cloudshield-siem.vercel.app](https://cloudshield-siem.vercel.app)** |
+| 📄 **Compiled Academic PDF** | **[cloudshield-siem.vercel.app/cloudshield_report.pdf](https://cloudshield-siem.vercel.app/cloudshield_report.pdf)** |
 | 📦 **GitHub Repository** | [PratyushPandey31/Security](https://github.com/PratyushPandey31/Security) |
 
 ---
@@ -36,16 +37,19 @@ Real-time threat map with Bezier attack vector tracing, live alert feeds, and an
 ## ✨ Platform Capabilities
 
 ### 🛡️ 1. SIEM SOC Dashboard (Deployed)
-- **Zero-Trust Auth Gateway** — Glassmorphic login with rotating SVG padlock, local storage session management
-- **Live Threat Map** — SVG world map with dynamic Bezier curved attack path animations per alert
-- **Real-Time Alert Feed** — SSE-powered streaming alerts with severity color coding and source IP tracking
-- **Stat Counters** — Animated rolling counters for threats, critical events, honeypot triggers, IP bans
+- **Zero-Trust Auth Gateway** — Glassmorphic login with rotating SVG padlock, keyphrase checks, and local session security.
+- **Dynamic Post-Login Greeting** — Interactive Welcome Banner displaying authenticated Operator ID, rank ("Chief Security Analyst"), node information, and active session status.
+- **Real-Time Connection Widget** — Header status badge displaying API state (**🟢 ONLINE**, **🔴 OFFLINE**, **🔵 CONNECTING**). Includes a settings popover to manually configure target API endpoints or tunnel URLs.
+- **Live Threat Map** — SVG world map rendering dynamic Quadratic Bezier curve attack paths from attacker coordinate nodes to the target in real time.
+- **Real-Time Alert Feed** — Sub-second SSE-powered alert streaming with severity badges and IP details.
+- **Stat Counters** — Rolling number animations for threat indices, critical blocks, honey traps, and IP bans.
 
 ### 📊 2. Analytics Intelligence Suite
-- **Attack Distribution Doughnut** — Breakdown of attack types with percentage tooltips
-- **24-Hour Threat Timeline** — Smooth glowing area chart (cyan→purple gradient)
-- **Severity Risk Matrix** — Horizontal gradient bars (CRITICAL→INFO)
-- **WAF Action Ratios** — PASS / BLOCK / DECEPTION breakdown
+- **safeFetchJson Protection** — Prevents HTML page parsing crashes by enforcing JSON mime-type checks.
+- **Attack Distribution Doughnut** — Breakdown of attack classifications with percentage tooltips.
+- **24-Hour Threat Timeline** — Glowing area chart featuring cyan-to-purple gradient transitions.
+- **Severity Risk Matrix** — Horizontal bar matrix depicting severity ratios.
+- **WAF Action Ratios** — Dynamic doughnut representing PASS, BLOCK, and DECEPTION frequencies.
 - **Alert Status Overview** — BLOCKED vs LOGGED
 - **HTTP Methods Chart** — GET / POST / PUT distribution
 
@@ -297,7 +301,7 @@ python unban_self.py
 
 **Pratyush Pandey**
 - 🌐 [GitHub](https://github.com/PratyushPandey31)
-- 🚀 [Live Project](https://pratyush-cloudshield-siem.vercel.app)
+- 🚀 [Live Project](https://cloudshield-siem.vercel.app)
 
 ---
 
