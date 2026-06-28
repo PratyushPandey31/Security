@@ -705,7 +705,7 @@
         <form id="auth-form" onsubmit="handleAuthSubmit(event)">
             <div class="auth-form-group">
                 <label for="auth-username">Operator ID</label>
-                <input type="text" id="auth-username" class="auth-input" placeholder="e.g. admin" required autocomplete="off" oninput="updateAuthGreeting(this.value)">
+                <input type="text" id="auth-username" class="auth-input" placeholder="e.g. admin" required autocomplete="off" oninput="updateAuthGreeting(this.value)" onchange="updateAuthGreeting(this.value)" onfocus="updateAuthGreeting(this.value)" onkeyup="updateAuthGreeting(this.value)">
             </div>
             
             <div id="auth-group-email" class="auth-form-group" style="display: none;">
@@ -2301,6 +2301,14 @@ function checkSiemAuth() {
         overlay.style.opacity = '1';
         overlay.style.visibility = 'visible';
         if (logoutBtn) logoutBtn.style.display = 'none';
+        
+        // Auto-detect browser autofill on load
+        setTimeout(() => {
+            const input = document.getElementById('auth-username');
+            if (input && window.updateAuthGreeting) {
+                window.updateAuthGreeting(input.value);
+            }
+        }, 150);
     }
 }
 

@@ -252,7 +252,7 @@
             <form action="/login" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username" oninput="updatePortalGreeting(this.value)">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username" oninput="updatePortalGreeting(this.value)" onchange="updatePortalGreeting(this.value)" onfocus="updatePortalGreeting(this.value)" onkeyup="updatePortalGreeting(this.value)">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -295,6 +295,14 @@
             subtitle.style.color = '#8b5cf6';
         }
     }
+    
+    // Auto-update on page load / browser autofill
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const input = document.getElementById('username');
+            if (input) updatePortalGreeting(input.value);
+        }, 150);
+    });
     </script>
 </body>
 </html>
