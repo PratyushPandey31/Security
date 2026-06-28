@@ -49,10 +49,9 @@ service_account.json
 *_secret*
 config.secret.*
 
-# Tunnel URLs (contain live public URLs — auto-generated each session)
-tunnel_url.txt
-
 # OS / Temp
 *.swp
 *.swo
 ~$*
+
+.vercel

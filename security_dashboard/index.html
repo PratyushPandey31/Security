@@ -692,8 +692,8 @@
             </svg>
         </div>
         <div class="auth-logo">🛡️ Cloud<span>Shield</span></div>
-        <div id="auth-card-title" style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:0.25rem;">Security Gateway</div>
-        <div class="auth-subtitle">IDENTIFICATION REQUIRED FOR ACCESS</div>
+        <div id="auth-card-title" style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:0.25rem; transition: all 0.3s;">Security Gateway</div>
+        <div class="auth-subtitle" id="auth-subtitle-text" style="transition: all 0.3s;">IDENTIFICATION REQUIRED FOR ACCESS</div>
         
         <div class="auth-tabs">
             <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">LOGIN</button>
@@ -705,7 +705,7 @@
         <form id="auth-form" onsubmit="handleAuthSubmit(event)">
             <div class="auth-form-group">
                 <label for="auth-username">Operator ID</label>
-                <input type="text" id="auth-username" class="auth-input" placeholder="e.g. admin" required autocomplete="off">
+                <input type="text" id="auth-username" class="auth-input" placeholder="e.g. admin" required autocomplete="off" oninput="updateAuthGreeting(this.value)">
             </div>
             
             <div id="auth-group-email" class="auth-form-group" style="display: none;">
@@ -1373,9 +1373,23 @@ function fetchActiveTunnelURL(callback) {
         return;
     }
     
-    // 3. Fallback to localhost if raw tunnel url is deleted/missing
-    const localFallback = 'http://localhost:5000';
-    verifyApiConnection(localFallback, callback);
+    // 3. Fetch tunnel URL from GitHub
+    const gitUrl = 'https://raw.githubusercontent.com/PratyushPandey31/Security/main/tunnel_url.txt';
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', gitUrl + '?t=' + new Date().getTime(), true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            let targetUrl = 'http://localhost:5000';
+            if (xhr.status === 200) {
+                targetUrl = xhr.responseText.trim();
+                console.log('Fetched tunnel URL from GitHub:', targetUrl);
+            } else {
+                console.warn('Failed to load tunnel URL from GitHub, using default localhost fallback');
+            }
+            verifyApiConnection(targetUrl, callback);
+        }
+    };
+    xhr.send();
 }
 
 // ─── API Settings Modal Logic ──────────────────────────────────────────────────
@@ -2140,6 +2154,46 @@ function getRegisteredUsers() {
     }
 }
 
+window.updateAuthGreeting = function(val) {
+    const subtitle = document.getElementById('auth-subtitle-text');
+    const cardTitle = document.getElementById('auth-card-title');
+    if (!subtitle || !cardTitle) return;
+    
+    val = val.trim();
+    if (!val) {
+        if (currentAuthTab === 'register') {
+            cardTitle.innerText = 'Register Analyst';
+            subtitle.innerText = 'CREATE SECURITY CREDENTIALS';
+            subtitle.style.color = 'var(--muted)';
+        } else {
+            cardTitle.innerText = 'Security Gateway';
+            subtitle.innerText = 'IDENTIFICATION REQUIRED FOR ACCESS';
+            subtitle.style.color = 'var(--muted)';
+        }
+        return;
+    }
+    
+    if (currentAuthTab === 'register') {
+        cardTitle.innerText = 'New Officer Node';
+        subtitle.innerText = '📝 PROVISIONING PROFILE FOR: ' + val.toUpperCase();
+        subtitle.style.color = 'var(--blue)';
+    } else {
+        const users = getRegisteredUsers();
+        const exists = users.some(u => u.username.toLowerCase() === val.toLowerCase());
+        if (exists) {
+            cardTitle.innerText = 'Welcome Back!';
+            subtitle.innerText = '🔓 CHIEF OFFICER ' + val.toUpperCase() + ' DETECTED';
+            subtitle.style.color = 'var(--green)';
+            subtitle.style.textShadow = '0 0 10px rgba(16,185,129,0.35)';
+        } else {
+            cardTitle.innerText = 'Access Requested';
+            subtitle.innerText = '🔐 KEYPHRASE REQUIRED FOR: ' + val.toUpperCase();
+            subtitle.style.color = 'var(--purple)';
+            subtitle.style.textShadow = '0 0 10px rgba(139,92,246,0.35)';
+        }
+    }
+}
+
 window.switchAuthTab = function(tab) {
     currentAuthTab = tab;
     document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -2161,6 +2215,9 @@ window.switchAuthTab = function(tab) {
         submitBtn.innerText = 'AUTHENTICATE';
         authTitle.innerText = 'Security Gateway';
     }
+    
+    const usernameVal = document.getElementById('auth-username').value;
+    window.updateAuthGreeting(usernameVal);
 }
 
 window.handleAuthSubmit = function(event) {

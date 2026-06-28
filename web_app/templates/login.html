@@ -235,8 +235,8 @@
         </div>
 
         <div class="auth-card">
-            <h2>User Authentication</h2>
-            <div class="auth-subtitle">Verify credentials to access secure console</div>
+            <h2 id="auth-card-title" style="transition: all 0.3s;">User Authentication</h2>
+            <div class="auth-subtitle" id="auth-card-subtitle" style="transition: all 0.3s;">Verify credentials to access secure console</div>
 
             {% if error %}
                 <div class="alert alert-error">
@@ -252,7 +252,7 @@
             <form action="/login" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username" oninput="updatePortalGreeting(this.value)">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
@@ -271,5 +271,30 @@
         </div>
     </div>
 
+    <script>
+    function updatePortalGreeting(val) {
+        const title = document.getElementById('auth-card-title');
+        const subtitle = document.getElementById('auth-card-subtitle');
+        if (!title || !subtitle) return;
+        
+        val = val.trim();
+        if (!val) {
+            title.innerText = 'User Authentication';
+            subtitle.innerText = 'Verify credentials to access secure console';
+            subtitle.style.color = 'var(--text-muted)';
+            return;
+        }
+        
+        if (val.toLowerCase() === 'admin') {
+            title.innerText = 'Welcome Back!';
+            subtitle.innerText = '🔓 CHIEF OPERATOR ' + val.toUpperCase() + ' DETECTED';
+            subtitle.style.color = 'var(--accent)';
+        } else {
+            title.innerText = 'Identity Detected';
+            subtitle.innerText = '🔐 ACCESS CONTROLS ACTIVE FOR: ' + val.toUpperCase();
+            subtitle.style.color = '#8b5cf6';
+        }
+    }
+    </script>
 </body>
 </html>
