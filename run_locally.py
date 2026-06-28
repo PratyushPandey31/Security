@@ -51,7 +51,7 @@ def establish_tunnel():
         print("[*] Initializing secure HTTPS tunnel (localhost.run) in background...")
         try:
             p = subprocess.Popen(
-                ["ssh", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
+                ["ssh", "-tt", "-o", "StrictHostKeyChecking=no", "-R", "80:127.0.0.1:5000", "nokey@localhost.run"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 stdin=subprocess.DEVNULL,
@@ -80,14 +80,16 @@ def establish_tunnel():
             if tunnel_url:
                 with open("tunnel_url.txt", "w") as f:
                     f.write(tunnel_url)
-                print("[*] Committing tunnel URL to GitHub...")
+                print("[*] Syncing with origin/main and committing tunnel URL...")
                 try:
+                    subprocess.run(["git", "fetch", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=15)
+                    subprocess.run(["git", "reset", "--mixed", "origin/main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=10)
                     subprocess.run(["git", "add", "tunnel_url.txt"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
                     subprocess.run(["git", "commit", "-m", f"Update active tunnel URL: {tunnel_url}"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=5)
                     subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, timeout=15)
-                    print("[+] Tunnel URL pushed to GitHub!")
+                    print(f"[+] Tunnel URL ({tunnel_url}) successfully pushed to GitHub!")
                 except Exception as e:
-                    print(f"[!] Git push failed: {e}")
+                    print(f"[!] Git sync/push failed: {e}")
 
             # Drain stdout so process doesn't hang
             def consume(stream):
